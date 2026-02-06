@@ -1,0 +1,86 @@
+{
+  "enemies": [
+    {
+      "id": "slime_green",
+      "name": "綠色史萊姆",
+      "maxHp": 12,
+      "element": 0,
+      "weakness": 1,
+      "resistance": null,
+      "actions": [
+        { "intent": 0, "value": 5, "weight": 3 },
+        { "intent": 1, "value": 4, "weight": 1 }
+      ],
+      "modifiers": []
+    },
+    {
+      "id": "slime_red",
+      "name": "紅色史萊姆",
+      "maxHp": 15,
+      "element": 1,
+      "weakness": 2,
+      "resistance": 1,
+      "actions": [
+        { "intent": 0, "value": 7, "weight": 2 },
+        { "intent": 4, "value": 5, "statusEffect": 0, "statusDuration": 2, "weight": 1 }
+      ],
+      "modifiers": []
+    },
+    {
+      "id": "goblin",
+      "name": "哥布林",
+      "maxHp": 20,
+      "element": 1,
+      "weakness": 2,
+      "resistance": null,
+      "actions": [
+        { "intent": 0, "value": 8, "weight": 3 },
+        { "intent": 2, "value": 2, "weight": 1 },
+        { "intent": 0, "value": 12, "weight": 1 }
+      ],
+      "modifiers": []
+    },
+    {
+      "id": "skeleton",
+      "name": "骷髏兵",
+      "maxHp": 18,
+      "element": 4,
+      "weakness": 0,
+      "resistance": 4,
+      "actions": [
+        { "intent": 0, "value": 6, "weight": 2 },
+        { "intent": 1, "value": 8, "weight": 2 },
+        { "intent": 0, "value": 10, "weight": 1 }
+      ],
+      "modifiers": []
+    },
+    {
+      "id": "wolf_enemy",
+      "name": "野狼",
+      "maxHp": 25,
+      "element": 0,
+      "weakness": 1,
+      "resistance": 0,
+      "actions": [
+        { "intent": 0, "value": 10, "weight": 3 },
+        { "intent": 4, "value": 6, "statusEffect": 5, "statusDuration": 3, "weight": 2 }
+      ],
+      "modifiers": []
+    },
+    {
+      "id": "boss_dragon",
+      "name": "幼龍",
+      "maxHp": 80,
+      "element": 1,
+      "weakness": 2,
+      "resistance": 1,
+      "actions": [
+        { "intent": 0, "value": 12, "weight": 2 },
+        { "intent": 4, "value": 8, "statusEffect": 0, "statusDuration": 3, "weight": 2 },
+        { "intent": 2, "value": 3, "weight": 1 },
+        { "intent": 5, "value": 20, "weight": 1 }
+      ],
+      "modifiers": []
+    }
+  ]
+}

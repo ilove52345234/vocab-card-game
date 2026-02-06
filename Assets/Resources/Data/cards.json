@@ -1,0 +1,108 @@
+{
+  "cards": [
+    {
+      "wordId": "fire",
+      "cardType": 0,
+      "energyCost": 1,
+      "effects": [
+        { "type": 0, "value": 6, "duration": 0, "description": "造成 6 點傷害" },
+        { "type": 6, "value": 2, "duration": 2, "description": "施加 2 層燃燒，持續 2 回合" }
+      ],
+      "comboWith": ["wind", "burn"],
+      "chainTriggers": ["smoke"]
+    },
+    {
+      "wordId": "water",
+      "cardType": 1,
+      "energyCost": 1,
+      "effects": [
+        { "type": 1, "value": 5, "duration": 0, "description": "獲得 5 點格擋" },
+        { "type": 9, "value": 1, "duration": 2, "description": "施加潮濕，持續 2 回合" }
+      ],
+      "comboWith": ["ice", "rain"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "wolf",
+      "cardType": 0,
+      "energyCost": 2,
+      "effects": [
+        { "type": 0, "value": 8, "duration": 0, "description": "造成 8 點傷害" },
+        { "type": 0, "value": 2, "duration": 0, "targetKeyword": "animal", "description": "每張動物卡 +2 傷害" }
+      ],
+      "comboWith": ["run", "attack"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "apple",
+      "cardType": 1,
+      "energyCost": 1,
+      "effects": [
+        { "type": 2, "value": 5, "duration": 0, "description": "回復 5 點生命" }
+      ],
+      "comboWith": ["eat", "drink"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "run",
+      "cardType": 1,
+      "energyCost": 1,
+      "effects": [
+        { "type": 1, "value": 8, "duration": 0, "description": "獲得 8 點格擋" },
+        { "type": 3, "value": 1, "duration": 0, "description": "抽 1 張牌" }
+      ],
+      "comboWith": ["walk", "jump"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "happy",
+      "cardType": 2,
+      "energyCost": 1,
+      "effects": [
+        { "type": 12, "value": 2, "duration": 999, "description": "獲得 2 點力量（永久）" }
+      ],
+      "comboWith": ["smile", "joy"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "sword",
+      "cardType": 0,
+      "energyCost": 2,
+      "effects": [
+        { "type": 0, "value": 12, "duration": 0, "description": "造成 12 點傷害" }
+      ],
+      "comboWith": ["attack", "strike"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "three",
+      "cardType": 1,
+      "energyCost": 0,
+      "effects": [
+        { "type": 3, "value": 3, "duration": 0, "description": "抽 3 張牌" }
+      ],
+      "comboWith": [],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "attack",
+      "cardType": 0,
+      "energyCost": 1,
+      "effects": [
+        { "type": 0, "value": 6, "duration": 0, "description": "造成 6 點傷害" }
+      ],
+      "comboWith": ["strike", "hit"],
+      "chainTriggers": []
+    },
+    {
+      "wordId": "defend",
+      "cardType": 1,
+      "energyCost": 1,
+      "effects": [
+        { "type": 1, "value": 6, "duration": 0, "description": "獲得 6 點格擋" }
+      ],
+      "comboWith": ["block", "shield"],
+      "chainTriggers": []
+    }
+  ]
+}
