@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using VocabCardGame.Data;
 using VocabCardGame.Core;
+using VocabCardGame.Learning;
 
 namespace VocabCardGame.Combat
 {
@@ -61,6 +62,8 @@ namespace VocabCardGame.Combat
                 currentHp = gameManager.playerData.MaxHp
             };
 
+            maxEnergy = gameManager.playerData.BaseEnergy;
+
             // 從學習進度建立牌組
             BuildDeck();
         }
@@ -75,8 +78,15 @@ namespace VocabCardGame.Combat
             discardPile.Clear();
             exhaustPile.Clear();
 
-            // TODO: 從 DataManager 載入玩家牌組
-            // 暫時使用空牌組
+            var gameManager = GameManager.Instance;
+            var cards = gameManager.dataManager.GetAllCards();
+
+            foreach (var card in cards)
+            {
+                // 確保有學習進度（MVP 直接初始化為 New）
+                card.progress = gameManager.learningManager.EnsureProgress(card.wordId, ProficiencyLevel.New);
+                drawPile.Add(card);
+            }
         }
 
         /// <summary>

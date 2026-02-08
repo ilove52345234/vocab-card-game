@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -271,3 +272,4 @@ namespace VocabCardGame.Editor
         }
     }
 }
+#endif

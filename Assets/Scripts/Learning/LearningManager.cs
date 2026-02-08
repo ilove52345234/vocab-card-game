@@ -107,6 +107,26 @@ namespace VocabCardGame.Learning
         }
 
         /// <summary>
+        /// 確保單字有進度資料（MVP 初始化用，不受每日上限限制）
+        /// </summary>
+        public WordProgress EnsureProgress(string wordId, ProficiencyLevel defaultLevel = ProficiencyLevel.New)
+        {
+            if (!wordProgressMap.TryGetValue(wordId, out var progress))
+            {
+                progress = new WordProgress
+                {
+                    wordId = wordId,
+                    level = defaultLevel,
+                    lastReviewTime = DateTime.Now,
+                    nextReviewTime = DateTime.Now.AddHours(4)
+                };
+                wordProgressMap[wordId] = progress;
+            }
+
+            return progress;
+        }
+
+        /// <summary>
         /// 處理答題結果
         /// </summary>
         public void OnAnswerResult(bool isCorrect)

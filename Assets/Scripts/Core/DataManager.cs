@@ -95,6 +95,11 @@ namespace VocabCardGame.Core
             return cardDatabase.Find(c => c.wordId == wordId);
         }
 
+        public List<CardData> GetAllCards()
+        {
+            return cardDatabase ?? new List<CardData>();
+        }
+
         public List<CardData> GetCardsByElement(Element element)
         {
             return cardDatabase.FindAll(c => c.wordData?.element == element);

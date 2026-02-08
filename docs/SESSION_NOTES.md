@@ -93,3 +93,38 @@ Assets/Scripts/
 - 保持不追蹤 `Library/`, `Logs/`, `UserSettings/` 等自動生成目錄
 
 這些變更已整理為一次提交，方便後續接手與同步。
+
+---
+
+## 交接記錄（2026-02-08）- MVP UI/資料補齊
+
+- 擴充單字與卡牌資料至 30 張（`words.json`, `cards.json`）
+- 修正卡牌效果 type 編號與程式列舉對齊
+- `CombatManager.BuildDeck()` 直接載入全部卡牌並初始化學習進度
+- `GameManager` 初始化流程調整，避免管理器引用為 null
+- 新增 MVP UGUI 介面腳本：
+  - `Assets/Scripts/UI/CombatUIController.cs`
+  - `Assets/Scripts/UI/QuizUIController.cs`
+  - `Assets/Scripts/UI/EnemyView.cs`
+- 戰鬥 UI 可自動開局並操作出牌、答題、結束回合
+
+---
+
+## 交接記錄（2026-02-09）- WebGL 一鍵建置與自動場景
+
+- 自動生成 MVP 場景與 UI 的 Editor 工具：
+  - `Assets/Editor/MvpSceneBuilder.cs`
+  - 產出 `Assets/Scenes/MvpScene.unity`
+  - 產出 Prefab：`Assets/Prefabs/MVP/CardButton.prefab`, `Assets/Prefabs/MVP/EnemyItem.prefab`
+- 新增 WebGL 建置腳本：
+  - `Assets/Editor/BuildScript.cs`
+  - CLI 可用 `-executeMethod VocabCardGame.Editor.BuildScript.BuildWebGL`
+- 新增一鍵 build + 本機 server 腳本：
+  - `scripts/build_webgl_and_serve.sh`
+  - 支援 `PORT`, `SERVE`, `WAIT_FOR_SERVER` 參數
+- WebGL 建置已改為 **關閉壓縮**（避免 gzip header 問題）
+- 已成功產出並可用本機 server 開啟（測試成功）
+
+### 下一步建議
+- 若要正式對外分享，可改用支援 gzip 的伺服器或再開啟壓縮
+- 開始補 UI 美術與敵人/卡牌圖片

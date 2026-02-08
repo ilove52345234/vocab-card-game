@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
+using VocabCardGame.Combat;
 using VocabCardGame.Data;
+using VocabCardGame.Learning;
 
 namespace VocabCardGame.Core
 {
@@ -28,13 +30,20 @@ namespace VocabCardGame.Core
         public event Action<int> OnPlayerLevelUp;
         public event Action<string> OnAchievementUnlocked;
 
+        private bool isInitialized = false;
+
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                Initialize();
+
+                // 確保引用存在（避免 AddComponent 順序導致為 null）
+                if (dataManager == null) dataManager = GetComponent<DataManager>();
+                if (combatManager == null) combatManager = GetComponent<CombatManager>();
+                if (learningManager == null) learningManager = GetComponent<LearningManager>();
+                if (audioManager == null) audioManager = FindObjectOfType<AudioManager>();
             }
             else
             {
@@ -42,16 +51,39 @@ namespace VocabCardGame.Core
             }
         }
 
+        private void Start()
+        {
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+        }
+
         private void Initialize()
         {
+            if (dataManager == null)
+            {
+                Debug.LogError("[GameManager] DataManager is missing. Initialization aborted.");
+                return;
+            }
+
             // 載入或創建玩家資料
             playerData = dataManager.LoadPlayerData() ?? new PlayerData
             {
                 firstPlayDate = DateTime.Now
             };
 
+            // 載入單字學習進度
+            if (learningManager != null)
+            {
+                var progress = dataManager.LoadWordProgress();
+                learningManager.LoadProgress(progress);
+            }
+
             // 更新遊玩天數
             UpdatePlayDays();
+
+            isInitialized = true;
         }
 
         private void UpdatePlayDays()
