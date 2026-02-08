@@ -90,3 +90,15 @@ git add -A && git commit -m "訊息" && git push
 - 目標用戶：英文初學者
 - 每日學習量有上限（防疲勞設計）
 - 新手保護期 7 天
+
+## 重要：對話結束前的動作
+
+**當 token 剩餘低於 10% 時，必須執行：**
+
+1. 儲存所有未提交的變更
+2. 更新 `README.md` 的開發進度區塊
+3. 更新 `docs/SESSION_NOTES.md` 的最新狀態
+4. 執行 `git add -A && git commit && git push`
+5. 告知用戶已儲存進度
+
+這確保下次對話可以無縫接續。
