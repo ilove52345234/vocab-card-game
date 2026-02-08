@@ -82,3 +82,14 @@ Assets/Scripts/
 ---
 
 *最後更新：2026-02-08*
+
+---
+
+## 交接記錄（2026-02-08）
+
+本次由新 agent 接手，釐清目前 repo 狀態並整理版本控管：
+- 新增 `.gitignore`（Unity 標準忽略規則）
+- 追蹤 Unity 專案必需檔案（`Assets/**/*.meta`、`ProjectSettings/*.asset`、`Packages/manifest.json`、`Packages/packages-lock.json`）
+- 保持不追蹤 `Library/`, `Logs/`, `UserSettings/` 等自動生成目錄
+
+這些變更已整理為一次提交，方便後續接手與同步。

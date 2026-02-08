@@ -91,6 +91,27 @@ git add -A && git commit -m "訊息" && git push
 - 每日學習量有上限（防疲勞設計）
 - 新手保護期 7 天
 
+## 開發模式
+
+```
+用戶（規劃）──▶ Claude（編寫+CLI建置）──▶ 用戶（測試畫面）
+```
+
+- **用戶負責**：規劃功能、設計決策、測試回饋
+- **Claude 負責**：編寫程式碼、CLI 建置、啟動遊戲到可測試狀態
+
+### CLI 建置指令
+
+```bash
+# 開啟 Unity 專案（Play 模式）
+open -a "/Applications/Unity/Hub/Editor/2022.3.62f3/Unity.app" --args -projectPath "$(pwd)"
+
+# 批次建置 (WebGL)
+/Applications/Unity/Hub/Editor/2022.3.62f3/Unity.app/Contents/MacOS/Unity -batchmode -projectPath "$(pwd)" -executeMethod BuildScript.BuildWebGL -quit
+```
+
+---
+
 ## 重要：對話結束前的動作
 
 **當 token 剩餘低於 10% 時，必須執行：**

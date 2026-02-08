@@ -1,0 +1,33 @@
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Crash reports
+sysinfo.txt
+
+# Rider / VS
+*.sln
+*.user
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln.docstates
+*.unityproj
+
+# Addressables cache
+/Assets/AddressableAssetsData/*/*.bin*
+
+# Do not ignore these package files
+!/[Pp]ackages/manifest.json
+!/[Pp]ackages/packages-lock.json
