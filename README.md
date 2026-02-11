@@ -37,59 +37,43 @@
 
 ---
 
-## 快速開始
+## 系統設計解說
 
-### 在 Claude Code 中繼續開發
+### 學習與熟練度系統
 
-```bash
-git clone https://github.com/ilove52345234/vocab-card-game.git
-cd vocab-card-game
-claude
-```
+以 SM-2 記憶曲線為核心，熟練度直接影響卡牌倍率與答題機率。新字必須答題後才能入牌，確保「學習即遊玩」。對應設計：`docs/plans/2026-02-06-game-design.md`。
 
-然後輸入 `/continue` 繼續開發。
+### 答題系統
 
-### 一鍵建置 WebGL 並啟動本機伺服器
+答題流程採識讀→聽力→拼字漸進式難度。答題結果會即時影響卡牌效果倍率，並回饋學習進度。對應實作：`Assets/Scripts/Learning/QuizManager.cs`。
 
-```bash
-scripts/build_webgl_and_serve.sh
-```
+### 戰鬥系統
 
-需求：Unity Hub 已安裝該版本的 `WebGL Build Support` 模組。
+回合制出牌，能量與抽牌節奏控制，敵人意圖透明顯示。戰鬥力來源遵循 60/35/5 分佈，避免數值膨脹。對應實作：`Assets/Scripts/Combat/CombatManager.cs`。
 
-預設使用 `http://localhost:8000`，如需改 port：
+### 卡牌系統
 
-```bash
-PORT=9000 scripts/build_webgl_and_serve.sh
-```
+一字一卡，卡牌效果基於標準值表並可量化偏移。卡牌維度與元素由單字語義決定，不可為平衡需要而調整。對應資料：`Assets/Resources/Data/cards.json`。
 
-若只想建置不啟動伺服器：
+### 協同系統
 
-```bash
-SERVE=0 scripts/build_webgl_and_serve.sh
-```
+協同固定三軸：維度連鎖、元素共鳴、知識共振。資源媒介（produces/consumes）僅作為互動管道，不新增協同軸。對應設計：`docs/plans/2026-02-11-synergy-system-design.md`、`docs/plans/2026-02-11-resource-mediator-synergy.md`。
 
-若要啟動伺服器但不阻塞終端：
+### 遺物系統
 
-```bash
-WAIT_FOR_SERVER=0 scripts/build_webgl_and_serve.sh
-```
+以字首/字尾/字根構詞學為基礎，效果必須與語意掛鉤，字根遺物必有詞庫連動。對應設計：`docs/plans/2026-02-11-relic-system-design.md`。
 
-### MVP 測試場景
+### 地圖與房間系統
 
-MVP 場景已自動生成：`Assets/Scenes/MvpScene.unity`  
-可直接 Play 進入戰鬥流程。
+三章節、15 步路線，遵循固定規則與房間比例，休息站與書房承接學習節奏。對應設計：`docs/plans/2026-02-11-map-system-design.md`、`docs/plans/2026-02-11-study-room-design.md`。
 
-### 可用的 Claude Skills
+### 詞族進化系統
 
-| 指令 | 功能 |
-|------|------|
-| `/continue` | 繼續專案開發 |
-| `/add-word` | 新增單字 |
-| `/batch-add-words` | 批次新增單字 |
-| `/add-enemy` | 新增敵人 |
-| `/design-card` | 設計卡牌效果 |
-| `/review-design` | 檢視設計進度 |
+Lv.5 進化三叉選擇（進化/深化/繼續），進化不是上位替代而是策略分歧。對應設計：`docs/plans/2026-02-11-card-upgrade-system.md`。
+
+### UI/UX 系統
+
+資訊層級以學習優先，戰鬥中必須可存取單字釋義與發音。答題回饋必須即時清楚。對應規範：`docs/DESIGN_RULES.md`。
 
 ---
 
