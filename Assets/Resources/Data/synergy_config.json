@@ -1,0 +1,14 @@
+{
+  "resourceMediator": {
+    "bonusPerToken": 0.1,
+    "maxTokensPerTag": 2,
+    "maxTotalBonus": 0.3,
+    "applyToEffects": [
+      "Damage",
+      "Block",
+      "Heal",
+      "DrawCard",
+      "GainEnergy"
+    ]
+  }
+}

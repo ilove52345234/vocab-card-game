@@ -148,6 +148,15 @@ Assets/Scripts/
 
 ### 下一步
 
-- **順序 3：資源媒介協同**（produces/consumes 運行時追蹤）
-- 然後順序 4：湧現式三軸協同（維度連鎖/元素共鳴/知識共振）
+- **順序 4：湧現式三軸協同**（維度連鎖/元素共鳴/知識共振）
 - 詳見 `docs/IMPLEMENTATION_STATUS.md`
+
+---
+
+## 交接記錄（2026-02-11）- 資源媒介協同完成
+
+- 新增設計文件：`docs/plans/2026-02-11-resource-mediator-synergy.md`
+- 新增設定檔：`Assets/Resources/Data/synergy_config.json`
+- 新增資料結構：`Assets/Scripts/Data/SynergyConfig.cs`
+- `DataManager` 載入協同設定
+- `CombatManager` 完成回合資源池、消費/產出順序、倍率加成（僅作用主效果）

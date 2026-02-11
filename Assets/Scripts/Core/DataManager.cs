@@ -18,6 +18,7 @@ namespace VocabCardGame.Core
         private List<EnemyData> enemyDatabase;
         private List<ComboData> comboDatabase;
         private List<RelicData> relicDatabase;
+        private SynergyConfig synergyConfig;
 
         private string SavePath => Path.Combine(Application.persistentDataPath, "save");
 
@@ -41,6 +42,7 @@ namespace VocabCardGame.Core
             LoadEnemyDatabase();
             LoadComboDatabase();
             LoadRelicDatabase();
+            LoadSynergyConfig();
         }
 
         #region Word Database
@@ -63,6 +65,29 @@ namespace VocabCardGame.Core
         public WordDatabase GetWordDatabase()
         {
             return wordDatabase;
+        }
+
+        #endregion
+
+        #region Synergy Config
+
+        private void LoadSynergyConfig()
+        {
+            var json = Resources.Load<TextAsset>("Data/synergy_config");
+            if (json != null)
+            {
+                synergyConfig = JsonUtility.FromJson<SynergyConfig>(json.text);
+            }
+            else
+            {
+                synergyConfig = new SynergyConfig();
+                Debug.LogWarning("Synergy config not found, using defaults");
+            }
+        }
+
+        public SynergyConfig GetSynergyConfig()
+        {
+            return synergyConfig ?? new SynergyConfig();
         }
 
         #endregion

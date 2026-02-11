@@ -35,6 +35,9 @@ namespace VocabCardGame.Combat
         private int consecutiveAttacks = 0;
         private int consecutiveSkills = 0;
         private int correctAnswersThisTurn = 0;
+        private readonly Dictionary<string, int> resourcePool = new Dictionary<string, int>();
+        private readonly HashSet<CardEffectType> resourceEffectWhitelist = new HashSet<CardEffectType>();
+        private ResourceMediatorConfig resourceConfig;
 
         // 事件
         public event Action<CombatState> OnCombatStateChanged;
@@ -97,6 +100,7 @@ namespace VocabCardGame.Combat
             currentState = CombatState.PlayerTurn;
             turnNumber = 0;
             cardsPlayedThisCombat.Clear();
+            InitializeResourceMediator();
 
             // 創建敵人實例
             enemies.Clear();
@@ -142,6 +146,7 @@ namespace VocabCardGame.Combat
             consecutiveAttacks = 0;
             consecutiveSkills = 0;
             correctAnswersThisTurn = 0;
+            ResetResourcePool();
 
             // 重置能量
             currentEnergy = maxEnergy;
@@ -314,10 +319,13 @@ namespace VocabCardGame.Combat
             // 取得卡牌元素（用於元素弱點/抗性計算）
             Element? cardElement = card.wordData?.element;
 
+            // 先消費資源媒介，再執行效果
+            float resourceBonus = ConsumeResources(card);
+
             // 執行效果
             foreach (var effect in card.effects)
             {
-                ExecuteEffect(effect, target, multiplier, cardElement);
+                ExecuteEffect(effect, target, multiplier, resourceBonus, cardElement);
             }
 
             // 檢查姿態觸發
@@ -328,6 +336,9 @@ namespace VocabCardGame.Combat
 
             // 檢查連鎖
             CheckChainTriggers(card);
+
+            // 產出資源媒介
+            ProduceResources(card);
 
             // 卡牌進入棄牌堆或消耗堆
             if (card.effects.Any(e => e.type == CardEffectType.Exhaust))
@@ -348,9 +359,14 @@ namespace VocabCardGame.Combat
         /// <summary>
         /// 執行單個效果
         /// </summary>
-        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, Element? cardElement = null)
+        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, float resourceBonus, Element? cardElement = null)
         {
             int value = Mathf.RoundToInt(effect.value * multiplier);
+
+            if (resourceBonus > 0f && ShouldApplyResourceBonus(effect.type))
+            {
+                value = Mathf.RoundToInt(value * (1f + resourceBonus));
+            }
 
             // 計算姿態加成
             value = ApplyStanceModifier(effect.type, value);
@@ -563,6 +579,100 @@ namespace VocabCardGame.Combat
         private void CheckChainTriggers(CardData playedCard)
         {
             // TODO: 檢查是否觸發連鎖效果
+        }
+
+        /// <summary>
+        /// 初始化資源媒介協同設定
+        /// </summary>
+        private void InitializeResourceMediator()
+        {
+            var config = GameManager.Instance?.dataManager?.GetSynergyConfig();
+            resourceConfig = config?.resourceMediator ?? new ResourceMediatorConfig();
+
+            resourceEffectWhitelist.Clear();
+            if (resourceConfig.applyToEffects != null && resourceConfig.applyToEffects.Length > 0)
+            {
+                foreach (var name in resourceConfig.applyToEffects)
+                {
+                    if (Enum.TryParse(name, out CardEffectType effectType))
+                    {
+                        resourceEffectWhitelist.Add(effectType);
+                    }
+                }
+            }
+            else
+            {
+                resourceEffectWhitelist.Add(CardEffectType.Damage);
+                resourceEffectWhitelist.Add(CardEffectType.Block);
+                resourceEffectWhitelist.Add(CardEffectType.Heal);
+                resourceEffectWhitelist.Add(CardEffectType.DrawCard);
+                resourceEffectWhitelist.Add(CardEffectType.GainEnergy);
+            }
+        }
+
+        /// <summary>
+        /// 回合開始重置資源池
+        /// </summary>
+        private void ResetResourcePool()
+        {
+            resourcePool.Clear();
+        }
+
+        /// <summary>
+        /// 消費資源媒介並回傳本張卡的倍率加成
+        /// </summary>
+        private float ConsumeResources(CardData card)
+        {
+            if (resourceConfig == null) InitializeResourceMediator();
+            if (card.consumes == null || card.consumes.Length == 0) return 0f;
+
+            if (resourceConfig.maxTokensPerTag <= 0 || resourceConfig.bonusPerToken <= 0f)
+            {
+                return 0f;
+            }
+
+            float bonus = 0f;
+            foreach (var tag in card.consumes)
+            {
+                if (string.IsNullOrWhiteSpace(tag)) continue;
+                if (!resourcePool.TryGetValue(tag, out int available)) continue;
+                if (available <= 0) continue;
+
+                int consumeCount = Mathf.Min(available, resourceConfig.maxTokensPerTag);
+                resourcePool[tag] = available - consumeCount;
+                bonus += consumeCount * resourceConfig.bonusPerToken;
+
+                if (bonus >= resourceConfig.maxTotalBonus && resourceConfig.maxTotalBonus > 0f)
+                {
+                    bonus = resourceConfig.maxTotalBonus;
+                    break;
+                }
+            }
+
+            return bonus;
+        }
+
+        /// <summary>
+        /// 產出資源媒介（每回合有上限）
+        /// </summary>
+        private void ProduceResources(CardData card)
+        {
+            if (resourceConfig == null) InitializeResourceMediator();
+            if (card.produces == null || card.produces.Length == 0) return;
+            if (resourceConfig.maxTokensPerTag <= 0) return;
+
+            foreach (var tag in card.produces)
+            {
+                if (string.IsNullOrWhiteSpace(tag)) continue;
+                resourcePool.TryGetValue(tag, out int current);
+                int next = Mathf.Min(current + 1, resourceConfig.maxTokensPerTag);
+                resourcePool[tag] = next;
+            }
+        }
+
+        private bool ShouldApplyResourceBonus(CardEffectType effectType)
+        {
+            return resourceEffectWhitelist.Contains(effectType);
         }
 
         /// <summary>
