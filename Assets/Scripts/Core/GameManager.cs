@@ -19,6 +19,7 @@ namespace VocabCardGame.Core
         public CombatManager combatManager;
         public LearningManager learningManager;
         public AudioManager audioManager;
+        public VocabCardGame.Map.MapManager mapManager;
 
         [Header("Current State")]
         public PlayerData playerData;
@@ -45,6 +46,7 @@ namespace VocabCardGame.Core
                 if (combatManager == null) combatManager = GetComponent<CombatManager>();
                 if (learningManager == null) learningManager = GetComponent<LearningManager>();
                 if (audioManager == null) audioManager = FindObjectOfType<AudioManager>();
+                if (mapManager == null) mapManager = FindObjectOfType<VocabCardGame.Map.MapManager>();
             }
             else
             {
@@ -106,6 +108,7 @@ namespace VocabCardGame.Core
             currentDifficulty = difficulty;
             currentFloor = 1;
             combatManager.InitializeRun();
+            mapManager?.GenerateNewMap();
             OnGameStateChanged?.Invoke();
         }
 
@@ -117,6 +120,7 @@ namespace VocabCardGame.Core
             currentMode = GameMode.EndlessAbyss;
             currentFloor = 1;
             combatManager.InitializeRun();
+            mapManager?.GenerateNewMap();
             OnGameStateChanged?.Invoke();
         }
 
@@ -128,6 +132,7 @@ namespace VocabCardGame.Core
             currentMode = GameMode.DailyChallenge;
             currentFloor = 1;
             combatManager.InitializeRun();
+            mapManager?.GenerateNewMap();
             OnGameStateChanged?.Invoke();
         }
 

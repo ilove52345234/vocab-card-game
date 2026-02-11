@@ -148,7 +148,7 @@ Assets/Scripts/
 
 ### 下一步
 
-- **順序 7：地圖生成**
+- **順序 8：休息站系統**
 - 詳見 `docs/IMPLEMENTATION_STATUS.md`
 
 ---
@@ -187,3 +187,13 @@ Assets/Scripts/
 - `DataManager` 載入遺物效果設定
 - 戰鬥/答題遺物已落地（re/dis/pre/over/mis/tion/ness/er/ful/less/ly/port/ject/struct/spec/tract/rupt）
 - 休息站選項（relic_un）待休息站系統完成後接入
+
+---
+
+## 交接記錄（2026-02-11）- 地圖生成完成
+
+- 新增地圖設定：`Assets/Resources/Data/map_config.json`
+- 新增地圖結構：`Assets/Scripts/Map/MapConfig.cs`
+- 新增生成器：`Assets/Scripts/Map/MapGenerator.cs`
+- 新增管理器：`Assets/Scripts/Map/MapManager.cs`
+- `DataManager` 載入地圖設定；`GameManager` 可取得 `MapManager`

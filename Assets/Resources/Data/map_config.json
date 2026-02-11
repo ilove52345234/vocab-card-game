@@ -1,0 +1,26 @@
+{
+  "steps": 15,
+  "lanes": 3,
+  "fixedRooms": [
+    { "step": 1, "type": "Enemy" },
+    { "step": 9, "type": "Treasure" },
+    { "step": 15, "type": "Rest" }
+  ],
+  "roomCounts": [
+    { "type": "Enemy", "count": 6 },
+    { "type": "Elite", "count": 2 },
+    { "type": "Rest", "count": 2 },
+    { "type": "Study", "count": 1 },
+    { "type": "Treasure", "count": 1 },
+    { "type": "Unknown", "count": 3 }
+  ],
+  "rules": {
+    "noEliteBeforeStep": 5,
+    "minEliteGap": 3,
+    "minRestGap": 4,
+    "studyNotBeforeStep": 4,
+    "studyNotAdjacentRest": true,
+    "noConsecutiveSameNonCombat": true,
+    "branchChance": 0.5
+  }
+}

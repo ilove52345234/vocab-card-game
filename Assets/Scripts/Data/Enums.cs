@@ -142,6 +142,21 @@ namespace VocabCardGame.Data
     }
 
     /// <summary>
+    /// 地圖房間類型
+    /// </summary>
+    public enum RoomType
+    {
+        None,       // 未設定
+        Enemy,      // 普通戰鬥
+        Elite,      // 精英戰鬥
+        Rest,       // 休息站
+        Study,      // 書房
+        Treasure,   // 寶箱
+        Unknown,    // 未知事件
+        Boss        // 章節 Boss
+    }
+
+    /// <summary>
     /// 敵人類別
     /// </summary>
     public enum EnemyCategory

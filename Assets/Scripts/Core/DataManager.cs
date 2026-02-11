@@ -20,6 +20,7 @@ namespace VocabCardGame.Core
         private List<RelicData> relicDatabase;
         private SynergyConfig synergyConfig;
         private RelicEffectConfig relicEffectConfig;
+        private VocabCardGame.Map.MapConfig mapConfig;
 
         private string SavePath => Path.Combine(Application.persistentDataPath, "save");
 
@@ -45,6 +46,7 @@ namespace VocabCardGame.Core
             LoadRelicDatabase();
             LoadSynergyConfig();
             LoadRelicEffectConfig();
+            LoadMapConfig();
         }
 
         #region Word Database
@@ -67,6 +69,29 @@ namespace VocabCardGame.Core
         public WordDatabase GetWordDatabase()
         {
             return wordDatabase;
+        }
+
+        #endregion
+
+        #region Map Config
+
+        private void LoadMapConfig()
+        {
+            var json = Resources.Load<TextAsset>("Data/map_config");
+            if (json != null)
+            {
+                mapConfig = JsonUtility.FromJson<VocabCardGame.Map.MapConfig>(json.text);
+            }
+            else
+            {
+                mapConfig = new VocabCardGame.Map.MapConfig();
+                Debug.LogWarning("Map config not found, using defaults");
+            }
+        }
+
+        public VocabCardGame.Map.MapConfig GetMapConfig()
+        {
+            return mapConfig ?? new VocabCardGame.Map.MapConfig();
         }
 
         #endregion
