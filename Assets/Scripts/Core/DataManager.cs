@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using VocabCardGame.Data;
 using VocabCardGame.Rest;
+using VocabCardGame.StudyRoom;
 
 namespace VocabCardGame.Core
 {
@@ -23,6 +24,7 @@ namespace VocabCardGame.Core
         private RelicEffectConfig relicEffectConfig;
         private VocabCardGame.Map.MapConfig mapConfig;
         private RestSiteConfig restSiteConfig;
+        private StudyRoomConfig studyRoomConfig;
 
         private string SavePath => Path.Combine(Application.persistentDataPath, "save");
 
@@ -50,6 +52,7 @@ namespace VocabCardGame.Core
             LoadRelicEffectConfig();
             LoadMapConfig();
             LoadRestSiteConfig();
+            LoadStudyRoomConfig();
         }
 
         #region Word Database
@@ -72,6 +75,29 @@ namespace VocabCardGame.Core
         public WordDatabase GetWordDatabase()
         {
             return wordDatabase;
+        }
+
+        #endregion
+
+        #region Study Room Config
+
+        private void LoadStudyRoomConfig()
+        {
+            var json = Resources.Load<TextAsset>("Data/study_room_config");
+            if (json != null)
+            {
+                studyRoomConfig = JsonUtility.FromJson<StudyRoomConfig>(json.text);
+            }
+            else
+            {
+                studyRoomConfig = new StudyRoomConfig();
+                Debug.LogWarning("Study room config not found, using defaults");
+            }
+        }
+
+        public StudyRoomConfig GetStudyRoomConfig()
+        {
+            return studyRoomConfig ?? new StudyRoomConfig();
         }
 
         #endregion

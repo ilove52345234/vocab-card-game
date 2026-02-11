@@ -21,6 +21,7 @@ namespace VocabCardGame.Core
         public AudioManager audioManager;
         public VocabCardGame.Map.MapManager mapManager;
         public VocabCardGame.Rest.RestSiteManager restSiteManager;
+        public VocabCardGame.StudyRoom.StudyRoomManager studyRoomManager;
 
         [Header("Current State")]
         public PlayerData playerData;
@@ -49,6 +50,7 @@ namespace VocabCardGame.Core
                 if (audioManager == null) audioManager = FindObjectOfType<AudioManager>();
                 if (mapManager == null) mapManager = FindObjectOfType<VocabCardGame.Map.MapManager>();
                 if (restSiteManager == null) restSiteManager = FindObjectOfType<VocabCardGame.Rest.RestSiteManager>();
+                if (studyRoomManager == null) studyRoomManager = FindObjectOfType<VocabCardGame.StudyRoom.StudyRoomManager>();
             }
             else
             {
@@ -185,6 +187,54 @@ namespace VocabCardGame.Core
         public void AddGold(int amount)
         {
             playerData.gold += amount;
+            dataManager.SavePlayerData(playerData);
+        }
+
+        public int GetLearningPoints()
+        {
+            return playerData != null ? playerData.learningPoints : 0;
+        }
+
+        public void AddLearningPoints(int amount)
+        {
+            if (playerData == null) return;
+            playerData.learningPoints += Mathf.Max(0, amount);
+            dataManager.SavePlayerData(playerData);
+        }
+
+        public bool SpendLearningPoints(int amount)
+        {
+            if (playerData == null) return false;
+            if (amount <= 0) return true;
+            if (playerData.learningPoints < amount) return false;
+            playerData.learningPoints -= amount;
+            dataManager.SavePlayerData(playerData);
+            return true;
+        }
+
+        public void AddStashedCard(string wordId)
+        {
+            if (playerData == null || string.IsNullOrWhiteSpace(wordId)) return;
+            if (!playerData.stashedCardWordIds.Contains(wordId))
+            {
+                playerData.stashedCardWordIds.Add(wordId);
+                dataManager.SavePlayerData(playerData);
+            }
+        }
+
+        public void SetWordNote(string wordId, string note)
+        {
+            if (playerData == null || string.IsNullOrWhiteSpace(wordId)) return;
+            var entry = playerData.wordNotes.Find(n => n.wordId == wordId);
+            if (entry == null)
+            {
+                entry = new WordNoteEntry { wordId = wordId, note = note ?? string.Empty };
+                playerData.wordNotes.Add(entry);
+            }
+            else
+            {
+                entry.note = note ?? string.Empty;
+            }
             dataManager.SavePlayerData(playerData);
         }
 

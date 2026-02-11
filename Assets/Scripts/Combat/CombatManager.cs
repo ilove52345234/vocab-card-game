@@ -127,6 +127,20 @@ namespace VocabCardGame.Combat
             drawPile.Add(card);
         }
 
+        public void RemoveCardFromDeck(string wordId)
+        {
+            RemoveCardFromList(drawPile, wordId);
+            RemoveCardFromList(hand, wordId);
+            RemoveCardFromList(discardPile, wordId);
+            RemoveCardFromList(exhaustPile, wordId);
+        }
+
+        private void RemoveCardFromList(List<CardData> list, string wordId)
+        {
+            if (list == null) return;
+            list.RemoveAll(c => c != null && c.wordId == wordId);
+        }
+
         private bool DeckContains(string wordId)
         {
             return drawPile.Any(c => c.wordId == wordId)

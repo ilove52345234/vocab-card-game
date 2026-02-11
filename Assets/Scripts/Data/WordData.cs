@@ -38,6 +38,7 @@ namespace VocabCardGame.Data
         public DateTime lastReviewTime; // 上次複習時間
         public DateTime nextReviewTime; // 下次複習時間
         public float easeFactor = 2.5f; // SM-2 演算法的 EF 值
+        public bool isDeepened;         // 是否已深化（解鎖 Lv.8-9）
 
         /// <summary>
         /// 計算答題正確率

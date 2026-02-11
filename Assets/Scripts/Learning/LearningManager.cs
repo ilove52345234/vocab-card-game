@@ -30,6 +30,7 @@ namespace VocabCardGame.Learning
         public event Action<string, ProficiencyLevel> OnWordLevelUp;
         public event Action<string, ProficiencyLevel> OnWordLevelDown;
         public event Action<int> OnStreakUpdated;
+        public event Action<string> OnWordDeepened;
 
         private void Start()
         {
@@ -226,6 +227,16 @@ namespace VocabCardGame.Learning
             return stats;
         }
 
+        public void MarkWordDeepened(string wordId)
+        {
+            if (!wordProgressMap.TryGetValue(wordId, out var progress)) return;
+            if (progress.isDeepened) return;
+
+            progress.isDeepened = true;
+            SaveWordProgress(wordProgressMap);
+            OnWordDeepened?.Invoke(wordId);
+        }
+
         /// <summary>
         /// 取得各元素單字統計
         /// </summary>
@@ -296,7 +307,7 @@ namespace VocabCardGame.Learning
             {
                 progress.level = (ProficiencyLevel)Math.Min((int)progress.level + 1, (int)ProficiencyLevel.Internalized);
                 progress.nextReviewTime = progress.CalculateNextReviewForLevel(progress.level);
-                SaveWordProgress(wordProgressMap);
+                GameManager.Instance.dataManager.SaveWordProgress(wordProgressMap);
                 return Rest.RestUpgradeOutcome.Perfect;
             }
 
@@ -304,14 +315,14 @@ namespace VocabCardGame.Learning
             {
                 progress.level = (ProficiencyLevel)Math.Min((int)progress.level + 1, (int)ProficiencyLevel.Internalized);
                 progress.nextReviewTime = previousNextReview;
-                SaveWordProgress(wordProgressMap);
+                GameManager.Instance.dataManager.SaveWordProgress(wordProgressMap);
                 return Rest.RestUpgradeOutcome.Good;
             }
 
             if (correctCount == 1)
             {
                 progress.nextReviewTime = DateTime.Now;
-                SaveWordProgress(wordProgressMap);
+                GameManager.Instance.dataManager.SaveWordProgress(wordProgressMap);
                 return Rest.RestUpgradeOutcome.Retry;
             }
 
@@ -319,14 +330,14 @@ namespace VocabCardGame.Learning
             {
                 progress.level = (ProficiencyLevel)Math.Max((int)progress.level - 1, (int)ProficiencyLevel.New);
                 progress.nextReviewTime = DateTime.Now;
-                SaveWordProgress(wordProgressMap);
+                GameManager.Instance.dataManager.SaveWordProgress(wordProgressMap);
                 return Rest.RestUpgradeOutcome.Fail;
             }
 
             // 其他情況：保持不變
             progress.level = previousLevel;
             progress.nextReviewTime = previousNextReview;
-            SaveWordProgress(wordProgressMap);
+            GameManager.Instance.dataManager.SaveWordProgress(wordProgressMap);
             return Rest.RestUpgradeOutcome.None;
         }
     }

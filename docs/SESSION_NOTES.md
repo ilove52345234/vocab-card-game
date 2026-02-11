@@ -231,3 +231,14 @@ Assets/Scripts/
 - 休息站選項：回血 / 升級卡牌 / 學新字；持有 `relic_un` 時新增喝湯選項
 - 升級流程：連續答題 3 次，依答對次數套用熟練度結果
 - 學新字：從未學池抽選，答對才解鎖並加入牌組
+
+---
+
+## 交接記錄（2026-02-11）- 書房系統完成
+
+- 新增書房設定：`Assets/Resources/Data/study_room_config.json`
+- 新增書房資料結構：`Assets/Scripts/StudyRoom/StudyRoomConfig.cs`
+- 新增書房流程：`Assets/Scripts/StudyRoom/StudyRoomManager.cs`
+- 書房選項：預習 / 暫放 / 進化 / 深化 / 筆記（對應 LP 花費）
+- LP 儲存：`PlayerData.learningPoints`
+- 暫放卡牌與筆記資料：`PlayerData.stashedCardWordIds`、`PlayerData.wordNotes`

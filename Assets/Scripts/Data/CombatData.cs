@@ -40,12 +40,17 @@ namespace VocabCardGame.Data
         public int totalCorrectAnswers = 0;
         public int consecutiveCorrect = 0;
         public int maxConsecutiveCorrect = 0;
+        public int learningPoints = 0;
         public DateTime firstPlayDate;
         public int totalPlayDays = 0;
 
         // 遺物
         public List<string> ownedRelics = new List<string>();
         public List<string> equippedRelics = new List<string>();
+
+        // 書房：暫放卡牌與筆記
+        public List<string> stashedCardWordIds = new List<string>();
+        public List<WordNoteEntry> wordNotes = new List<WordNoteEntry>();
 
         // 成就
         public List<string> unlockedAchievements = new List<string>();
@@ -85,6 +90,13 @@ namespace VocabCardGame.Data
             if (level <= 50) return 3000;
             return 5000;
         }
+    }
+
+    [Serializable]
+    public class WordNoteEntry
+    {
+        public string wordId;
+        public string note;
     }
 
     /// <summary>
