@@ -60,8 +60,10 @@ namespace VocabCardGame.Data
         public CardType cardType;       // 卡牌類型
         public int energyCost;          // 能量消耗
         public List<CardEffect> effects = new List<CardEffect>(); // 效果列表
-        public string[] comboWith;      // 可組成 Combo 的卡牌 ID
-        public string[] chainTriggers;  // 可連鎖觸發的卡牌 ID
+        public string[] produces;       // 產出的資源媒介標籤
+        public string[] consumes;       // 消費/受益的資源媒介標籤
+        public string deviation;        // 偏移方法：standard, positive, negative, condition
+        public string balanceNote;      // 平衡備註（設計用，運行時不用）
 
         // 運行時數據（不序列化）
         [NonSerialized] public WordData wordData;
@@ -74,15 +76,16 @@ namespace VocabCardGame.Data
         {
             if (progress == null) return 1f;
 
+            // 標準值平衡體系：Lv.1-2=×1.0, Lv.3-4=×1.1, Lv.5-6=×1.2, Lv.7=×1.3
             return progress.level switch
             {
                 ProficiencyLevel.New => 1.0f,
-                ProficiencyLevel.Known => 1.05f,
-                ProficiencyLevel.Familiar => 1.10f,
-                ProficiencyLevel.Remembered => 1.20f,
-                ProficiencyLevel.Proficient => 1.35f,
-                ProficiencyLevel.Mastered => 1.50f,
-                ProficiencyLevel.Internalized => 1.50f,
+                ProficiencyLevel.Known => 1.0f,
+                ProficiencyLevel.Familiar => 1.1f,
+                ProficiencyLevel.Remembered => 1.1f,
+                ProficiencyLevel.Proficient => 1.2f,
+                ProficiencyLevel.Mastered => 1.2f,
+                ProficiencyLevel.Internalized => 1.3f,
                 _ => 1.0f
             };
         }
