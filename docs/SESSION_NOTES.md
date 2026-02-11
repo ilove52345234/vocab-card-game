@@ -25,7 +25,6 @@
 ### 難度曲線
 - 新手保護期（Day 1-7）
 - 答題率：100% → 80% → 60% → 40% → 20% → 10% → 0%
-- 每日新詞上限：5-10 → 10-15 → 15-20
 
 ## 技術選擇
 
@@ -45,34 +44,47 @@ Assets/Scripts/
 │   ├── AudioManager.cs     # 音訊管理
 │   └── GameBootstrap.cs    # 場景初始化
 ├── Data/
-│   ├── Enums.cs            # 列舉定義
+│   ├── Enums.cs            # 列舉定義（含 Dimension/EnemyCategory/RelicMorphType）
 │   ├── WordData.cs         # 單字資料結構
-│   ├── CardData.cs         # 卡牌資料結構
-│   └── CombatData.cs       # 戰鬥資料結構
+│   ├── CardData.cs         # 卡牌資料結構（含 dimension/produces/consumes）
+│   └── CombatData.cs       # 戰鬥資料結構（含 EnemyCategory/testsDimension）
 ├── Combat/
-│   └── CombatManager.cs    # 戰鬥邏輯（700+ 行）
-└── Learning/
-    ├── LearningManager.cs  # 學習進度管理
-    └── QuizManager.cs      # 答題邏輯
+│   └── CombatManager.cs    # 戰鬥邏輯（含元素弱點/抗性計算）
+├── Learning/
+│   ├── LearningManager.cs  # 學習進度管理
+│   └── QuizManager.cs      # 答題邏輯
+└── UI/
+    ├── CombatUIController.cs
+    ├── QuizUIController.cs
+    └── EnemyView.cs
 ```
 
 ## 範例資料
-- 10 個單字（5 元素各 2 個）
-- 對應卡牌效果
-- 6 個敵人（含 1 Boss）
+- 31 個單字（words.json）
+- 30 張卡牌（cards.json，含標準值校準 + 維度 + 資源媒介標籤）
+- 9 個敵人（enemies.json，5 普通 + 3 精英 + 1 Boss）
+- 18 個遺物（relics.json，6 字首 + 6 字尾 + 6 字根）
 
-## 待完成
+## 設計文檔
 
-- [ ] Unity 授權啟用
-- [ ] UI 系統建立
-- [ ] 擴充詞庫至 30 張 MVP
-- [ ] AI 生成卡牌美術
-- [ ] 戰鬥畫面實作
+| 文件 | 內容 |
+|------|------|
+| `docs/DESIGN_RULES.md` | 10 絕對規則 + 10 通用規則 |
+| `docs/IMPLEMENTATION_STATUS.md` | 依賴關係鏈 + 實作進度 |
+| `docs/plans/2026-02-06-game-design.md` | 主設計文檔 v1.5 |
+| `docs/plans/2026-02-11-standard-value-balance.md` | 標準值平衡體系 |
+| `docs/plans/2026-02-11-map-system-design.md` | 地圖系統（7 房間 + 9 規則） |
+| `docs/plans/2026-02-11-dimension-and-elite-design.md` | 四維度 + 精英怪 |
+| `docs/plans/2026-02-11-relic-system-design.md` | 遺物系統 v2（三層構詞學） |
+| `docs/plans/2026-02-11-card-upgrade-system.md` | 詞族進化系統 |
+| `docs/plans/2026-02-11-study-room-design.md` | 書房系統 |
+| `docs/plans/2026-02-11-synergy-system-design.md` | 湧現式協同（三軸） |
 
 ## 重要文件
 
-- 設計文件：`docs/plans/2026-02-06-game-design.md`
-- 專案 README：`README.md`
+- 設計規則：`docs/DESIGN_RULES.md`
+- 實作進度：`docs/IMPLEMENTATION_STATUS.md`
+- 主設計文檔：`docs/plans/2026-02-06-game-design.md`
 
 ## GitHub
 
@@ -81,7 +93,7 @@ Assets/Scripts/
 
 ---
 
-*最後更新：2026-02-08*
+*最後更新：2026-02-11*
 
 ---
 
@@ -92,8 +104,6 @@ Assets/Scripts/
 - 追蹤 Unity 專案必需檔案（`Assets/**/*.meta`、`ProjectSettings/*.asset`、`Packages/manifest.json`、`Packages/packages-lock.json`）
 - 保持不追蹤 `Library/`, `Logs/`, `UserSettings/` 等自動生成目錄
 
-這些變更已整理為一次提交，方便後續接手與同步。
-
 ---
 
 ## 交接記錄（2026-02-08）- MVP UI/資料補齊
@@ -102,29 +112,42 @@ Assets/Scripts/
 - 修正卡牌效果 type 編號與程式列舉對齊
 - `CombatManager.BuildDeck()` 直接載入全部卡牌並初始化學習進度
 - `GameManager` 初始化流程調整，避免管理器引用為 null
-- 新增 MVP UGUI 介面腳本：
-  - `Assets/Scripts/UI/CombatUIController.cs`
-  - `Assets/Scripts/UI/QuizUIController.cs`
-  - `Assets/Scripts/UI/EnemyView.cs`
+- 新增 MVP UGUI 介面腳本：CombatUIController, QuizUIController, EnemyView
 - 戰鬥 UI 可自動開局並操作出牌、答題、結束回合
 
 ---
 
 ## 交接記錄（2026-02-09）- WebGL 一鍵建置與自動場景
 
-- 自動生成 MVP 場景與 UI 的 Editor 工具：
-  - `Assets/Editor/MvpSceneBuilder.cs`
-  - 產出 `Assets/Scenes/MvpScene.unity`
-  - 產出 Prefab：`Assets/Prefabs/MVP/CardButton.prefab`, `Assets/Prefabs/MVP/EnemyItem.prefab`
-- 新增 WebGL 建置腳本：
-  - `Assets/Editor/BuildScript.cs`
-  - CLI 可用 `-executeMethod VocabCardGame.Editor.BuildScript.BuildWebGL`
-- 新增一鍵 build + 本機 server 腳本：
-  - `scripts/build_webgl_and_serve.sh`
-  - 支援 `PORT`, `SERVE`, `WAIT_FOR_SERVER` 參數
-- WebGL 建置已改為 **關閉壓縮**（避免 gzip header 問題）
+- 自動生成 MVP 場景與 UI 的 Editor 工具
+- 新增 WebGL 建置腳本
+- WebGL 建置已改為關閉壓縮（避免 gzip header 問題）
 - 已成功產出並可用本機 server 開啟（測試成功）
 
-### 下一步建議
-- 若要正式對外分享，可改用支援 gzip 的伺服器或再開啟壓縮
-- 開始補 UI 美術與敵人/卡牌圖片
+---
+
+## 交接記錄（2026-02-11）- 系統設計大幅重構 + 開始實作
+
+### 設計階段完成項目
+
+1. **P0-1 標準值平衡體系**：基礎值表、三種偏移方法、答題倍率
+2. **P0-2 地圖系統**：7 種房間（含書房）、15 步結構、9 條生成規則
+3. **P1-1 協同系統重構**：資源媒介取代固定 Combo（produces/consumes 標籤）
+4. **P1-2 四維度 + 精英怪**：Strike/Guard/Boost/Warp 對應詞性、3 隻精英
+5. **P2-2 遺物系統 v2**：三層構詞學（6 字首 + 6 字尾 + 6 字根）+ 詞庫連動
+6. **P3 詞族進化系統**：Lv.5 三叉選擇（進化/深化/繼續）+ 卡牌獲取方式全覽
+7. **書房系統**：LP 貨幣、5 項服務（預習/暫放/進化/深化/筆記）取代商店
+8. **湧現式協同**：三軸關鍵詞（維度連鎖/元素共鳴/知識共振）
+9. **設計規則文件**：10 絕對規則 + 10 通用規則
+10. **實作依賴與進度文件**：Layer 0-10 依賴鏈 + 各系統狀態矩陣
+
+### 實作階段完成項目
+
+- **順序 1：CardData 讀取新欄位** — Dimension enum、RelicMorphType enum、EnemyCategory enum 加入 Enums.cs；CardData 加入 dimension 欄位；RelicData 重寫為三層構詞學結構；EnemyData 加入 category/testsDimension/specialMechanic
+- **順序 2：元素弱點/抗性計算** — ApplyElementModifier 實作完成，弱點 ×1.5、抗性 ×0.5，卡牌元素透過 ExecuteCard→ExecuteEffect 傳遞
+
+### 下一步
+
+- **順序 3：資源媒介協同**（produces/consumes 運行時追蹤）
+- 然後順序 4：湧現式三軸協同（維度連鎖/元素共鳴/知識共振）
+- 詳見 `docs/IMPLEMENTATION_STATUS.md`
