@@ -52,6 +52,7 @@ namespace VocabCardGame.Combat
         private KnowledgeResonanceConfig knowledgeConfig;
         private int insightTokensThisTurn = 0;
         private bool lastCardWasHighProficiency = false;
+        private const string InkStainCardId = "ink_stain";
 
         // 事件
         public event Action<CombatState> OnCombatStateChanged;
@@ -252,15 +253,18 @@ namespace VocabCardGame.Combat
                 correctAnswersThisTurn++;
                 GameManager.Instance.AddExperience(GetExpForQuizMode(card.GetQuizMode()));
 
-                // 執行卡牌效果
-                ExecuteCard(card, target, card.GetEffectMultiplier(), energyCostSpent);
+            // 執行卡牌效果
+            ExecuteCard(card, target, card.GetEffectMultiplier(), energyCostSpent);
 
-                // 檢查專注姿態
-                CheckFocusedStance();
+            // 檢查專注姿態
+            CheckFocusedStance();
             }
             else
             {
                 // 答錯處理
+                ApplyBookwormWrongAnswer();
+                WeakenSleepingGargoyleOnCorrect(false);
+
                 float penalty = GameManager.Instance.playerData.GetGamePhase() == GamePhase.Tutorial
                     ? 1f  // 教學期不懲罰
                     : GameManager.Instance.playerData.GetGamePhase() == GamePhase.Beginner
@@ -285,6 +289,12 @@ namespace VocabCardGame.Combat
                 {
                     ChangeStance(Stance.None);
                 }
+            }
+
+            if (isCorrect)
+            {
+                WeakenSleepingGargoyleOnCorrect(true);
+                RemoveInkStainOnCorrect();
             }
 
             OnCombatStateChanged?.Invoke(currentState);
@@ -368,6 +378,9 @@ namespace VocabCardGame.Combat
 
             // 元素共鳴
             ApplyElementResonance(card);
+
+            // 精英怪機制
+            ApplyBookwormNonAttack(card);
 
             // 卡牌進入棄牌堆或消耗堆
             if (card.effects.Any(e => e.type == CardEffectType.Exhaust))
@@ -855,6 +868,140 @@ namespace VocabCardGame.Combat
             }
         }
 
+        private bool IsBookworm(EnemyInstance enemy)
+        {
+            return enemy != null && enemy.data != null && enemy.data.id == "elite_bookworm";
+        }
+
+        private bool IsGargoyle(EnemyInstance enemy)
+        {
+            return enemy != null && enemy.data != null && enemy.data.id == "elite_gargoyle";
+        }
+
+        private bool IsSleepingGargoyle(EnemyInstance enemy)
+        {
+            return IsGargoyle(enemy) && enemy.sleepTurnsRemaining > 0;
+        }
+
+        private bool IsInkBlob(EnemyInstance enemy)
+        {
+            return enemy != null && enemy.data != null && enemy.data.id == "elite_inkblob";
+        }
+
+        private void ApplyBookwormNonAttack(CardData card)
+        {
+            if (card.cardType == CardType.Attack) return;
+            foreach (var enemy in enemies.Where(e => e.entity.IsAlive))
+            {
+                if (IsBookworm(enemy))
+                {
+                    enemy.entity.ApplyStatus(StatusEffectType.Strength, 1, 999);
+                }
+            }
+        }
+
+        private void ApplyBookwormWrongAnswer()
+        {
+            foreach (var enemy in enemies.Where(e => e.entity.IsAlive))
+            {
+                if (IsBookworm(enemy))
+                {
+                    enemy.entity.ApplyStatus(StatusEffectType.Strength, 1, 999);
+                }
+            }
+        }
+
+        private void ApplyGargoyleSleepTick(EnemyInstance enemy)
+        {
+            enemy.entity.ApplyStatus(StatusEffectType.Strength, 3, 999);
+            enemy.sleepTurnsRemaining = Mathf.Max(0, enemy.sleepTurnsRemaining - 1);
+        }
+
+        private void WeakenSleepingGargoyleOnCorrect(bool isCorrect)
+        {
+            if (!isCorrect) return;
+            foreach (var enemy in enemies.Where(e => e.entity.IsAlive))
+            {
+                if (!IsSleepingGargoyle(enemy)) continue;
+                if (enemy.entity.statusEffects.TryGetValue(StatusEffectType.Strength, out var strength))
+                {
+                    strength.value = Mathf.Max(0, strength.value - 1);
+                }
+            }
+        }
+
+        private int GetEnemyStrengthBonus(EnemyInstance enemy)
+        {
+            if (enemy == null) return 0;
+            if (enemy.entity.statusEffects.TryGetValue(StatusEffectType.Strength, out var strength))
+            {
+                return Mathf.Max(0, strength.value);
+            }
+            return 0;
+        }
+
+        private void ExecuteEnemyAttack(EnemyInstance enemy, int value)
+        {
+            int times = IsGargoyle(enemy) && enemy.sleepTurnsRemaining == 0 ? 2 : 1;
+            for (int i = 0; i < times; i++)
+            {
+                player.TakeDamage(value);
+                OnPlayerDamaged?.Invoke(value);
+            }
+        }
+
+        private void AddInkStainToDiscard()
+        {
+            discardPile.Add(CreateInkStainCard());
+        }
+
+        private void RemoveInkStainOnCorrect()
+        {
+            int idx = hand.FindIndex(c => c.wordId == InkStainCardId);
+            if (idx >= 0)
+            {
+                var card = hand[idx];
+                hand.RemoveAt(idx);
+                exhaustPile.Add(card);
+            }
+        }
+
+        private CardData CreateInkStainCard()
+        {
+            return new CardData
+            {
+                wordId = InkStainCardId,
+                cardType = CardType.Skill,
+                energyCost = 0,
+                effects = new List<CardEffect>(),
+                dimension = Dimension.Warp,
+                produces = Array.Empty<string>(),
+                consumes = Array.Empty<string>(),
+                deviation = "standard",
+                balanceNote = "墨漬：0費無效果佔手牌位",
+                wordData = new WordData
+                {
+                    id = InkStainCardId,
+                    english = "ink stain",
+                    chinese = "墨漬",
+                    partOfSpeech = "n.",
+                    element = Element.Abstract,
+                    tribe = "Status",
+                    keywords = Array.Empty<string>(),
+                    exampleSentences = Array.Empty<string>(),
+                    confusables = Array.Empty<string>(),
+                    audioPath = "",
+                    rarity = Rarity.Common,
+                    difficulty = 1
+                },
+                progress = new WordProgress
+                {
+                    wordId = InkStainCardId,
+                    level = ProficiencyLevel.Internalized
+                }
+            };
+        }
+
         /// <summary>
         /// 初始化資源媒介協同設定
         /// </summary>
@@ -993,11 +1140,23 @@ namespace VocabCardGame.Combat
 
             foreach (var enemy in enemies.Where(e => e.entity.IsAlive))
             {
+                if (IsInkBlob(enemy))
+                {
+                    AddInkStainToDiscard();
+                }
+
                 // 處理敵人回合開始效果
                 enemy.entity.ProcessTurnStart();
 
                 // 執行敵人行動
-                ExecuteEnemyAction(enemy);
+                if (IsSleepingGargoyle(enemy))
+                {
+                    ApplyGargoyleSleepTick(enemy);
+                }
+                else
+                {
+                    ExecuteEnemyAction(enemy);
+                }
 
                 // 決定下一回合行動
                 enemy.DecideNextAction();
@@ -1029,6 +1188,7 @@ namespace VocabCardGame.Combat
             }
 
             int value = action.value;
+            value += GetEnemyStrengthBonus(enemy);
 
             // 攻擊姿態：玩家受傷 +25%
             if (player.currentStance == Stance.Offensive && action.intent == EnemyIntent.Attack)
@@ -1039,8 +1199,7 @@ namespace VocabCardGame.Combat
             switch (action.intent)
             {
                 case EnemyIntent.Attack:
-                    player.TakeDamage(value);
-                    OnPlayerDamaged?.Invoke(value);
+                    ExecuteEnemyAttack(enemy, value);
                     break;
 
                 case EnemyIntent.Defend:
@@ -1060,8 +1219,7 @@ namespace VocabCardGame.Combat
                     break;
 
                 case EnemyIntent.AttackDebuff:
-                    player.TakeDamage(value);
-                    OnPlayerDamaged?.Invoke(value);
+                    ExecuteEnemyAttack(enemy, value);
                     if (action.statusEffect.HasValue)
                     {
                         player.ApplyStatus(action.statusEffect.Value, value, action.statusDuration);
@@ -1128,6 +1286,7 @@ namespace VocabCardGame.Combat
         public EnemyData data;
         public CombatEntity entity;
         public EnemyAction currentAction;
+        public int sleepTurnsRemaining;
 
         public EnemyInstance(EnemyData data)
         {
@@ -1137,6 +1296,7 @@ namespace VocabCardGame.Combat
                 maxHp = data.maxHp,
                 currentHp = data.maxHp
             };
+            sleepTurnsRemaining = data != null && data.id == "elite_gargoyle" ? 3 : 0;
         }
 
         public void DecideNextAction()
