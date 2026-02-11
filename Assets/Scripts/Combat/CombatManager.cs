@@ -95,6 +95,56 @@ namespace VocabCardGame.Combat
             BuildDeck();
         }
 
+        public CombatEntity GetOrCreatePlayerEntity()
+        {
+            if (player == null)
+            {
+                var gameManager = GameManager.Instance;
+                player = new CombatEntity
+                {
+                    maxHp = gameManager.playerData.MaxHp,
+                    currentHp = gameManager.playerData.MaxHp
+                };
+            }
+
+            return player;
+        }
+
+        public List<CardData> GetRunDeckCards()
+        {
+            var result = new List<CardData>();
+            AppendUniqueCards(result, drawPile);
+            AppendUniqueCards(result, hand);
+            AppendUniqueCards(result, discardPile);
+            AppendUniqueCards(result, exhaustPile);
+            return result;
+        }
+
+        public void AddCardToDeck(CardData card)
+        {
+            if (card == null) return;
+            if (DeckContains(card.wordId)) return;
+            drawPile.Add(card);
+        }
+
+        private bool DeckContains(string wordId)
+        {
+            return drawPile.Any(c => c.wordId == wordId)
+                || hand.Any(c => c.wordId == wordId)
+                || discardPile.Any(c => c.wordId == wordId)
+                || exhaustPile.Any(c => c.wordId == wordId);
+        }
+
+        private void AppendUniqueCards(List<CardData> target, IEnumerable<CardData> source)
+        {
+            foreach (var card in source)
+            {
+                if (card == null) continue;
+                if (target.Any(c => c.wordId == card.wordId)) continue;
+                target.Add(card);
+            }
+        }
+
         /// <summary>
         /// 建立牌組
         /// </summary>

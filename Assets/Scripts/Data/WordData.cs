@@ -131,6 +131,23 @@ namespace VocabCardGame.Data
 
             return DateTime.Now.AddHours(hours * easeFactor);
         }
+
+        public DateTime CalculateNextReviewForLevel(ProficiencyLevel targetLevel)
+        {
+            int hours = targetLevel switch
+            {
+                ProficiencyLevel.New => 4,
+                ProficiencyLevel.Known => 24,
+                ProficiencyLevel.Familiar => 48,
+                ProficiencyLevel.Remembered => 96,
+                ProficiencyLevel.Proficient => 168,
+                ProficiencyLevel.Mastered => 336,
+                ProficiencyLevel.Internalized => 720,
+                _ => 4
+            };
+
+            return DateTime.Now.AddHours(hours * easeFactor);
+        }
     }
 
     /// <summary>

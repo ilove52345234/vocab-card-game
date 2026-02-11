@@ -197,3 +197,37 @@ Assets/Scripts/
 - 新增生成器：`Assets/Scripts/Map/MapGenerator.cs`
 - 新增管理器：`Assets/Scripts/Map/MapManager.cs`
 - `DataManager` 載入地圖設定；`GameManager` 可取得 `MapManager`
+
+---
+
+## 交接記錄（2026-02-11）- Unity MCP 導入計劃（草案）
+
+### 推薦方案
+- **CoplayDev/unity-mcp**（MIT，Unity 2021.3+，工具齊全、社群活躍）
+
+### 導入時機
+- 目前已完成核心系統與資料結構，後續進入大量 UI/內容製作與重複性 Editor 操作階段，適合導入 MCP。
+
+### 導入步驟（擬定）
+1. **確認環境**：Unity 2022.3 LTS、Python 3.10+、uv、MCP Client（Cursor / Claude / Codex CLI）。
+2. **安裝 Unity Package**：透過 Unity Package Manager 以 Git URL 安裝 MCP for Unity。
+3. **啟動 MCP Server**：Unity 視窗 `Window > MCP for Unity`，啟動本機 Server。
+4. **設定 MCP Client**：選擇客戶端並生成設定檔，連線成功應顯示連線狀態。
+5. **驗證流程**：執行簡單命令（如建立空物件、查詢場景物件）確認穩定可用。
+6. **建立使用規則**：只允許可逆操作（UI 布局、Prefab 生成、場景檢視）；破壞性操作需人工確認。
+
+### 預期使用場景
+- 批量建立/調整 UI、Prefab、Scene 物件
+- 執行 Editor MenuItem、批次修正資料與資產
+- 快速檢視 Console、抓取截圖、回歸測試輔助
+
+---
+
+## 交接記錄（2026-02-11）- 休息站系統完成
+
+- 新增休息站設定：`Assets/Resources/Data/rest_site_config.json`
+- 新增休息站資料結構：`Assets/Scripts/Rest/RestSiteConfig.cs`
+- 新增休息站流程：`Assets/Scripts/Rest/RestSiteManager.cs`
+- 休息站選項：回血 / 升級卡牌 / 學新字；持有 `relic_un` 時新增喝湯選項
+- 升級流程：連續答題 3 次，依答對次數套用熟練度結果
+- 學新字：從未學池抽選，答對才解鎖並加入牌組

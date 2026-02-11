@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using VocabCardGame.Data;
+using VocabCardGame.Rest;
 
 namespace VocabCardGame.Core
 {
@@ -21,6 +22,7 @@ namespace VocabCardGame.Core
         private SynergyConfig synergyConfig;
         private RelicEffectConfig relicEffectConfig;
         private VocabCardGame.Map.MapConfig mapConfig;
+        private RestSiteConfig restSiteConfig;
 
         private string SavePath => Path.Combine(Application.persistentDataPath, "save");
 
@@ -47,6 +49,7 @@ namespace VocabCardGame.Core
             LoadSynergyConfig();
             LoadRelicEffectConfig();
             LoadMapConfig();
+            LoadRestSiteConfig();
         }
 
         #region Word Database
@@ -69,6 +72,29 @@ namespace VocabCardGame.Core
         public WordDatabase GetWordDatabase()
         {
             return wordDatabase;
+        }
+
+        #endregion
+
+        #region Rest Site Config
+
+        private void LoadRestSiteConfig()
+        {
+            var json = Resources.Load<TextAsset>("Data/rest_site_config");
+            if (json != null)
+            {
+                restSiteConfig = JsonUtility.FromJson<RestSiteConfig>(json.text);
+            }
+            else
+            {
+                restSiteConfig = new RestSiteConfig();
+                Debug.LogWarning("Rest site config not found, using defaults");
+            }
+        }
+
+        public RestSiteConfig GetRestSiteConfig()
+        {
+            return restSiteConfig ?? new RestSiteConfig();
         }
 
         #endregion

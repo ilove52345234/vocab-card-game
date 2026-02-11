@@ -34,6 +34,7 @@ namespace VocabCardGame.Core
                 gm.combatManager = gmObj.AddComponent<CombatManager>();
                 gm.learningManager = gmObj.AddComponent<LearningManager>();
                 gm.audioManager = CreateAudioManager();
+                gm.restSiteManager = gmObj.AddComponent<VocabCardGame.Rest.RestSiteManager>();
 
                 DontDestroyOnLoad(gmObj);
                 Debug.Log("[GameBootstrap] GameManager created successfully");

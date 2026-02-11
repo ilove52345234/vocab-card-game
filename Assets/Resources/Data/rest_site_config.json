@@ -1,0 +1,8 @@
+{
+  "healPercent": 0.3,
+  "upgradeQuizCount": 3,
+  "newWordOptionCount": 3,
+  "unlockWordRequiresCorrect": true,
+  "soupHealPercent": 0.15,
+  "soupNewWordOptionCount": 1
+}

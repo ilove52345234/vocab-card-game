@@ -274,5 +274,60 @@ namespace VocabCardGame.Learning
         {
             wordProgressMap = data ?? new Dictionary<string, WordProgress>();
         }
+
+        /// <summary>
+        /// 休息站升級結果套用（依設計規則）
+        /// </summary>
+        public Rest.RestUpgradeOutcome ApplyRestUpgradeResult(string wordId, int correctCount, int totalCount)
+        {
+            if (!wordProgressMap.TryGetValue(wordId, out var progress))
+            {
+                return Rest.RestUpgradeOutcome.None;
+            }
+
+            var previousLevel = progress.level;
+            var previousNextReview = progress.nextReviewTime;
+
+            progress.lastReviewTime = DateTime.Now;
+            progress.correctCount += Mathf.Max(0, correctCount);
+            progress.wrongCount += Mathf.Max(0, totalCount - correctCount);
+
+            if (correctCount >= totalCount)
+            {
+                progress.level = (ProficiencyLevel)Math.Min((int)progress.level + 1, (int)ProficiencyLevel.Internalized);
+                progress.nextReviewTime = progress.CalculateNextReviewForLevel(progress.level);
+                SaveWordProgress(wordProgressMap);
+                return Rest.RestUpgradeOutcome.Perfect;
+            }
+
+            if (correctCount == totalCount - 1)
+            {
+                progress.level = (ProficiencyLevel)Math.Min((int)progress.level + 1, (int)ProficiencyLevel.Internalized);
+                progress.nextReviewTime = previousNextReview;
+                SaveWordProgress(wordProgressMap);
+                return Rest.RestUpgradeOutcome.Good;
+            }
+
+            if (correctCount == 1)
+            {
+                progress.nextReviewTime = DateTime.Now;
+                SaveWordProgress(wordProgressMap);
+                return Rest.RestUpgradeOutcome.Retry;
+            }
+
+            if (correctCount <= 0)
+            {
+                progress.level = (ProficiencyLevel)Math.Max((int)progress.level - 1, (int)ProficiencyLevel.New);
+                progress.nextReviewTime = DateTime.Now;
+                SaveWordProgress(wordProgressMap);
+                return Rest.RestUpgradeOutcome.Fail;
+            }
+
+            // 其他情況：保持不變
+            progress.level = previousLevel;
+            progress.nextReviewTime = previousNextReview;
+            SaveWordProgress(wordProgressMap);
+            return Rest.RestUpgradeOutcome.None;
+        }
     }
 }

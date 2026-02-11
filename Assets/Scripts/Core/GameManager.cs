@@ -20,6 +20,7 @@ namespace VocabCardGame.Core
         public LearningManager learningManager;
         public AudioManager audioManager;
         public VocabCardGame.Map.MapManager mapManager;
+        public VocabCardGame.Rest.RestSiteManager restSiteManager;
 
         [Header("Current State")]
         public PlayerData playerData;
@@ -47,6 +48,7 @@ namespace VocabCardGame.Core
                 if (learningManager == null) learningManager = GetComponent<LearningManager>();
                 if (audioManager == null) audioManager = FindObjectOfType<AudioManager>();
                 if (mapManager == null) mapManager = FindObjectOfType<VocabCardGame.Map.MapManager>();
+                if (restSiteManager == null) restSiteManager = FindObjectOfType<VocabCardGame.Rest.RestSiteManager>();
             }
             else
             {
