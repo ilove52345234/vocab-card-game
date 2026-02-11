@@ -148,7 +148,7 @@ Assets/Scripts/
 
 ### 下一步
 
-- **順序 4：湧現式三軸協同**（維度連鎖/元素共鳴/知識共振）
+- **順序 5：精英怪特殊機制**
 - 詳見 `docs/IMPLEMENTATION_STATUS.md`
 
 ---
@@ -160,3 +160,12 @@ Assets/Scripts/
 - 新增資料結構：`Assets/Scripts/Data/SynergyConfig.cs`
 - `DataManager` 載入協同設定
 - `CombatManager` 完成回合資源池、消費/產出順序、倍率加成（僅作用主效果）
+
+---
+
+## 交接記錄（2026-02-11）- 三軸協同完成
+
+- 維度連鎖：同維度 2/3 張倍率、覆蓋 3/4 維度獎勵
+- 元素共鳴：同元素 2/3 張觸發小效果（回復/攻擊加成/抽牌/格擋/降費）
+- 知識共振：Lv.5+ 洞察累積、Lv.1-2 緊接加成
+- 相關設定皆由 `Assets/Resources/Data/synergy_config.json` 驅動

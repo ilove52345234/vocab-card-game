@@ -38,6 +38,20 @@ namespace VocabCardGame.Combat
         private readonly Dictionary<string, int> resourcePool = new Dictionary<string, int>();
         private readonly HashSet<CardEffectType> resourceEffectWhitelist = new HashSet<CardEffectType>();
         private ResourceMediatorConfig resourceConfig;
+        private readonly Dictionary<Dimension, int> dimensionCounts = new Dictionary<Dimension, int>();
+        private readonly HashSet<Dimension> dimensionCoverage = new HashSet<Dimension>();
+        private bool dimensionCoverageRewarded3 = false;
+        private bool dimensionCoverageRewarded4 = false;
+        private readonly HashSet<CardEffectType> dimensionEffectWhitelist = new HashSet<CardEffectType>();
+        private DimensionChainConfig dimensionConfig;
+        private readonly Dictionary<Element, int> elementCounts = new Dictionary<Element, int>();
+        private readonly Dictionary<Element, int> elementResonanceTier = new Dictionary<Element, int>();
+        private ElementResonanceConfig elementConfig;
+        private int attackBonusThisTurn = 0;
+        private int pendingCostReductionCount = 0;
+        private KnowledgeResonanceConfig knowledgeConfig;
+        private int insightTokensThisTurn = 0;
+        private bool lastCardWasHighProficiency = false;
 
         // 事件
         public event Action<CombatState> OnCombatStateChanged;
@@ -50,6 +64,7 @@ namespace VocabCardGame.Combat
         public event Action OnTurnStart;
         public event Action OnTurnEnd;
         public event Action<bool> OnCombatEnd; // true = victory
+        public event Action<InsightRewardOption[]> OnInsightRewardAvailable;
 
         /// <summary>
         /// 初始化一輪遊戲
@@ -101,6 +116,9 @@ namespace VocabCardGame.Combat
             turnNumber = 0;
             cardsPlayedThisCombat.Clear();
             InitializeResourceMediator();
+            InitializeDimensionChain();
+            InitializeElementResonance();
+            InitializeKnowledgeResonance();
 
             // 創建敵人實例
             enemies.Clear();
@@ -147,6 +165,7 @@ namespace VocabCardGame.Combat
             consecutiveSkills = 0;
             correctAnswersThisTurn = 0;
             ResetResourcePool();
+            ResetSynergyTurnState();
 
             // 重置能量
             currentEnergy = maxEnergy;
@@ -193,7 +212,8 @@ namespace VocabCardGame.Combat
         public void TryPlayCard(CardData card, EnemyInstance target = null)
         {
             if (currentState != CombatState.PlayerTurn) return;
-            if (currentEnergy < card.energyCost) return;
+            int effectiveCost = GetEffectiveEnergyCost(card);
+            if (currentEnergy < effectiveCost) return;
             if (!hand.Contains(card)) return;
 
             // 檢查是否需要答題
@@ -206,20 +226,20 @@ namespace VocabCardGame.Combat
                 // 答題結果會回呼 OnQuizAnswered
                 QuizManager.Instance.StartQuiz(card, (isCorrect, quality) =>
                 {
-                    OnQuizAnswered(card, target, isCorrect, quality);
+                    OnQuizAnswered(card, target, isCorrect, quality, effectiveCost);
                 });
             }
             else
             {
                 // 直接執行卡牌效果
-                ExecuteCard(card, target, 1f);
+                ExecuteCard(card, target, 1f, effectiveCost);
             }
         }
 
         /// <summary>
         /// 答題結果回呼
         /// </summary>
-        private void OnQuizAnswered(CardData card, EnemyInstance target, bool isCorrect, int quality)
+        private void OnQuizAnswered(CardData card, EnemyInstance target, bool isCorrect, int quality, int energyCostSpent)
         {
             currentState = CombatState.PlayerTurn;
 
@@ -233,7 +253,7 @@ namespace VocabCardGame.Combat
                 GameManager.Instance.AddExperience(GetExpForQuizMode(card.GetQuizMode()));
 
                 // 執行卡牌效果
-                ExecuteCard(card, target, card.GetEffectMultiplier());
+                ExecuteCard(card, target, card.GetEffectMultiplier(), energyCostSpent);
 
                 // 檢查專注姿態
                 CheckFocusedStance();
@@ -249,14 +269,15 @@ namespace VocabCardGame.Combat
 
                 if (penalty > 0)
                 {
-                    ExecuteCard(card, target, penalty);
+                    ExecuteCard(card, target, penalty, energyCostSpent);
                 }
                 else
                 {
                     // 卡牌失效，只扣能量
-                    currentEnergy -= card.energyCost;
+                    currentEnergy -= energyCostSpent;
                     hand.Remove(card);
                     discardPile.Add(card);
+                    ConsumeCostReduction();
                 }
 
                 // 離開專注姿態
@@ -295,10 +316,11 @@ namespace VocabCardGame.Combat
         /// <summary>
         /// 執行卡牌效果
         /// </summary>
-        private void ExecuteCard(CardData card, EnemyInstance target, float multiplier)
+        private void ExecuteCard(CardData card, EnemyInstance target, float multiplier, int energyCostSpent)
         {
-            currentEnergy -= card.energyCost;
+            currentEnergy -= energyCostSpent;
             hand.Remove(card);
+            ConsumeCostReduction();
 
             // 記錄打出的卡牌
             cardsPlayedThisTurn.Add(card.wordId);
@@ -319,13 +341,17 @@ namespace VocabCardGame.Combat
             // 取得卡牌元素（用於元素弱點/抗性計算）
             Element? cardElement = card.wordData?.element;
 
+            // 協同倍率：維度連鎖 + 知識共振
+            float dimensionBonus = ApplyDimensionChain(card);
+            float knowledgeBonus = ApplyKnowledgeResonance(card);
+
             // 先消費資源媒介，再執行效果
             float resourceBonus = ConsumeResources(card);
 
             // 執行效果
             foreach (var effect in card.effects)
             {
-                ExecuteEffect(effect, target, multiplier, resourceBonus, cardElement);
+                ExecuteEffect(effect, target, multiplier, resourceBonus, dimensionBonus, knowledgeBonus, cardElement);
             }
 
             // 檢查姿態觸發
@@ -339,6 +365,9 @@ namespace VocabCardGame.Combat
 
             // 產出資源媒介
             ProduceResources(card);
+
+            // 元素共鳴
+            ApplyElementResonance(card);
 
             // 卡牌進入棄牌堆或消耗堆
             if (card.effects.Any(e => e.type == CardEffectType.Exhaust))
@@ -359,13 +388,23 @@ namespace VocabCardGame.Combat
         /// <summary>
         /// 執行單個效果
         /// </summary>
-        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, float resourceBonus, Element? cardElement = null)
+        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, float resourceBonus, float dimensionBonus, float knowledgeBonus, Element? cardElement = null)
         {
             int value = Mathf.RoundToInt(effect.value * multiplier);
 
             if (resourceBonus > 0f && ShouldApplyResourceBonus(effect.type))
             {
                 value = Mathf.RoundToInt(value * (1f + resourceBonus));
+            }
+
+            if (dimensionBonus > 0f && ShouldApplyDimensionBonus(effect.type))
+            {
+                value = Mathf.RoundToInt(value * (1f + dimensionBonus));
+            }
+
+            if (knowledgeBonus > 0f && ShouldApplyKnowledgeBonus(effect.type))
+            {
+                value = Mathf.RoundToInt(value * (1f + knowledgeBonus));
             }
 
             // 計算姿態加成
@@ -382,17 +421,20 @@ namespace VocabCardGame.Combat
                 case CardEffectType.Damage:
                     if (target != null)
                     {
-                        target.entity.TakeDamage(value);
-                        OnEnemyDamaged?.Invoke(target, value);
+                        int finalValue = value + attackBonusThisTurn;
+                        target.entity.TakeDamage(finalValue);
+                        OnEnemyDamaged?.Invoke(target, finalValue);
                     }
                     break;
 
                 case CardEffectType.DamageAll:
                     foreach (var enemy in enemies.Where(e => e.entity.IsAlive))
                     {
+                        int baseValue = value;
                         int dmg = cardElement.HasValue
-                            ? ApplyElementModifier(effect.type, value, enemy, cardElement.Value)
-                            : value;
+                            ? ApplyElementModifier(effect.type, baseValue, enemy, cardElement.Value)
+                            : baseValue;
+                        dmg += attackBonusThisTurn;
                         enemy.entity.TakeDamage(dmg);
                         OnEnemyDamaged?.Invoke(enemy, dmg);
                     }
@@ -582,6 +624,238 @@ namespace VocabCardGame.Combat
         }
 
         /// <summary>
+        /// 初始化維度連鎖協同設定
+        /// </summary>
+        private void InitializeDimensionChain()
+        {
+            var config = GameManager.Instance?.dataManager?.GetSynergyConfig();
+            dimensionConfig = config?.dimensionChain ?? new DimensionChainConfig();
+
+            dimensionEffectWhitelist.Clear();
+            if (dimensionConfig.applyToEffects != null && dimensionConfig.applyToEffects.Length > 0)
+            {
+                foreach (var name in dimensionConfig.applyToEffects)
+                {
+                    if (Enum.TryParse(name, out CardEffectType effectType))
+                    {
+                        dimensionEffectWhitelist.Add(effectType);
+                    }
+                }
+            }
+            else
+            {
+                dimensionEffectWhitelist.Add(CardEffectType.Damage);
+                dimensionEffectWhitelist.Add(CardEffectType.Block);
+                dimensionEffectWhitelist.Add(CardEffectType.Heal);
+                dimensionEffectWhitelist.Add(CardEffectType.DrawCard);
+                dimensionEffectWhitelist.Add(CardEffectType.GainEnergy);
+            }
+        }
+
+        /// <summary>
+        /// 初始化元素共鳴協同設定
+        /// </summary>
+        private void InitializeElementResonance()
+        {
+            var config = GameManager.Instance?.dataManager?.GetSynergyConfig();
+            elementConfig = config?.elementResonance ?? new ElementResonanceConfig();
+        }
+
+        /// <summary>
+        /// 初始化知識共振協同設定
+        /// </summary>
+        private void InitializeKnowledgeResonance()
+        {
+            var config = GameManager.Instance?.dataManager?.GetSynergyConfig();
+            knowledgeConfig = config?.knowledgeResonance ?? new KnowledgeResonanceConfig();
+        }
+
+        /// <summary>
+        /// 回合開始重置協同狀態
+        /// </summary>
+        private void ResetSynergyTurnState()
+        {
+            dimensionCounts.Clear();
+            dimensionCoverage.Clear();
+            dimensionCoverageRewarded3 = false;
+            dimensionCoverageRewarded4 = false;
+            elementCounts.Clear();
+            elementResonanceTier.Clear();
+            attackBonusThisTurn = 0;
+            pendingCostReductionCount = 0;
+            insightTokensThisTurn = 0;
+            lastCardWasHighProficiency = false;
+        }
+
+        /// <summary>
+        /// 維度連鎖：回傳本張卡倍率加成
+        /// </summary>
+        private float ApplyDimensionChain(CardData card)
+        {
+            if (dimensionConfig == null) InitializeDimensionChain();
+            if (!dimensionCounts.TryGetValue(card.dimension, out int count))
+            {
+                count = 0;
+            }
+            count++;
+            dimensionCounts[card.dimension] = count;
+
+            if (!dimensionCoverage.Contains(card.dimension))
+            {
+                dimensionCoverage.Add(card.dimension);
+                int coverageCount = dimensionCoverage.Count;
+                if (!dimensionCoverageRewarded3 && dimensionConfig.coverageDrawAt > 0 && coverageCount >= dimensionConfig.coverageDrawAt)
+                {
+                    DrawCard();
+                    dimensionCoverageRewarded3 = true;
+                }
+                if (!dimensionCoverageRewarded4 && dimensionConfig.coverageDrawAndEnergyAt > 0 && coverageCount >= dimensionConfig.coverageDrawAndEnergyAt)
+                {
+                    DrawCard();
+                    currentEnergy += 1;
+                    dimensionCoverageRewarded4 = true;
+                }
+            }
+
+            if (count == 2) return dimensionConfig.secondCardBonus;
+            if (count == 3) return dimensionConfig.thirdCardBonus;
+            return 0f;
+        }
+
+        private bool ShouldApplyDimensionBonus(CardEffectType effectType)
+        {
+            return dimensionEffectWhitelist.Contains(effectType);
+        }
+
+        /// <summary>
+        /// 元素共鳴：依元素累計觸發小效果
+        /// </summary>
+        private void ApplyElementResonance(CardData card)
+        {
+            if (elementConfig == null) InitializeElementResonance();
+            if (card.wordData == null) return;
+            Element element = card.wordData.element;
+
+            elementCounts.TryGetValue(element, out int count);
+            count++;
+            elementCounts[element] = count;
+
+            elementResonanceTier.TryGetValue(element, out int tier);
+            if (count == 2 && tier < 2)
+            {
+                ApplyElementResonanceTier(element, 2);
+                elementResonanceTier[element] = 2;
+            }
+            else if (count == 3 && tier < 3)
+            {
+                ApplyElementResonanceTier(element, 3);
+                elementResonanceTier[element] = 3;
+            }
+        }
+
+        private void ApplyElementResonanceTier(Element element, int tier)
+        {
+            switch (element)
+            {
+                case Element.Life:
+                    int healValue = tier == 2 ? elementConfig.lifeHeal2 : elementConfig.lifeHeal3 - elementConfig.lifeHeal2;
+                    if (healValue > 0) player.Heal(healValue);
+                    break;
+                case Element.Force:
+                    int addAttack = tier == 2 ? elementConfig.forceAttackBonus2 : elementConfig.forceAttackBonus3 - elementConfig.forceAttackBonus2;
+                    if (addAttack > 0) attackBonusThisTurn += addAttack;
+                    break;
+                case Element.Mind:
+                    int drawCount = tier == 2 ? elementConfig.mindDraw2 : elementConfig.mindDraw3 - elementConfig.mindDraw2;
+                    for (int i = 0; i < drawCount; i++) DrawCard();
+                    break;
+                case Element.Matter:
+                    int blockValue = tier == 2 ? elementConfig.matterBlock2 : elementConfig.matterBlock3 - elementConfig.matterBlock2;
+                    if (blockValue > 0) player.AddBlock(blockValue);
+                    break;
+                case Element.Abstract:
+                    int reductionCount = tier == 2 ? elementConfig.abstractCostReduction2 : elementConfig.abstractCostReduction3;
+                    pendingCostReductionCount = Mathf.Max(pendingCostReductionCount, reductionCount);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 知識共振：回傳本張卡倍率加成
+        /// </summary>
+        private float ApplyKnowledgeResonance(CardData card)
+        {
+            if (knowledgeConfig == null) InitializeKnowledgeResonance();
+            if (card.progress == null) return 0f;
+
+            bool isHigh = card.progress.level >= ProficiencyLevel.Proficient;
+            bool isLow = card.progress.level == ProficiencyLevel.New || card.progress.level == ProficiencyLevel.Known;
+
+            float bonus = 0f;
+            if (lastCardWasHighProficiency && isLow)
+            {
+                bonus = knowledgeConfig.lowLevelBonus;
+            }
+
+            if (isHigh)
+            {
+                insightTokensThisTurn += 1;
+            }
+
+            lastCardWasHighProficiency = isHigh;
+            return bonus;
+        }
+
+        private bool ShouldApplyKnowledgeBonus(CardEffectType effectType)
+        {
+            return effectType == CardEffectType.Damage
+                || effectType == CardEffectType.DamageAll
+                || effectType == CardEffectType.Block
+                || effectType == CardEffectType.Heal
+                || effectType == CardEffectType.DrawCard
+                || effectType == CardEffectType.GainEnergy;
+        }
+
+        /// <summary>
+        /// 洞察獎勵：回合結束觸發（MVP 預設抽牌）\n        /// </summary>
+        private void ResolveInsightReward()
+        {
+            if (knowledgeConfig == null) InitializeKnowledgeResonance();
+            if (insightTokensThisTurn < knowledgeConfig.insightThreshold) return;
+
+            InsightRewardOption[] options =
+            {
+                InsightRewardOption.Damage,
+                InsightRewardOption.Block,
+                InsightRewardOption.Draw
+            };
+
+            OnInsightRewardAvailable?.Invoke(options);
+
+            // MVP 預設：直接抽牌，後續 UI 再提供選擇
+            for (int i = 0; i < knowledgeConfig.insightRewardDraw; i++) DrawCard();
+
+            insightTokensThisTurn = 0;
+        }
+
+        /// <summary>
+        /// 抽象共鳴：下一張卡費用降低
+        /// </summary>
+        private int GetEffectiveEnergyCost(CardData card)
+        {
+            if (pendingCostReductionCount <= 0) return card.energyCost;
+            return Mathf.Max(0, card.energyCost - 1);
+        }
+
+        private void ConsumeCostReduction()
+        {
+            if (pendingCostReductionCount > 0)
+            {
+                pendingCostReductionCount--;
+            }
+        }
+
+        /// <summary>
         /// 初始化資源媒介協同設定
         /// </summary>
         private void InitializeResourceMediator()
@@ -699,6 +973,9 @@ namespace VocabCardGame.Combat
 
             // 處理玩家回合結束效果
             player.ProcessTurnEnd();
+
+            // 知識共振：洞察獎勵
+            ResolveInsightReward();
 
             OnTurnEnd?.Invoke();
 
@@ -823,7 +1100,7 @@ namespace VocabCardGame.Combat
     /// <summary>
     /// 戰鬥狀態
     /// </summary>
-    public enum CombatState
+        public enum CombatState
     {
         NotInCombat,
         PlayerTurn,
@@ -831,6 +1108,16 @@ namespace VocabCardGame.Combat
         EnemyTurn,
         Victory,
         Defeat
+    }
+
+    /// <summary>
+    /// 洞察獎勵選項
+    /// </summary>
+    public enum InsightRewardOption
+    {
+        Damage,
+        Block,
+        Draw
     }
 
     /// <summary>

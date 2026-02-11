@@ -10,5 +10,37 @@
       "DrawCard",
       "GainEnergy"
     ]
+  },
+  "dimensionChain": {
+    "secondCardBonus": 0.2,
+    "thirdCardBonus": 0.4,
+    "coverageDrawAt": 3,
+    "coverageDrawAndEnergyAt": 4,
+    "applyToEffects": [
+      "Damage",
+      "Block",
+      "Heal",
+      "DrawCard",
+      "GainEnergy"
+    ]
+  },
+  "elementResonance": {
+    "lifeHeal2": 2,
+    "lifeHeal3": 4,
+    "forceAttackBonus2": 2,
+    "forceAttackBonus3": 4,
+    "mindDraw2": 1,
+    "mindDraw3": 2,
+    "matterBlock2": 3,
+    "matterBlock3": 6,
+    "abstractCostReduction2": 1,
+    "abstractCostReduction3": 2
+  },
+  "knowledgeResonance": {
+    "insightThreshold": 3,
+    "insightRewardDamage": 3,
+    "insightRewardBlock": 3,
+    "insightRewardDraw": 1,
+    "lowLevelBonus": 0.3
   }
 }
