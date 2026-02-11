@@ -251,3 +251,4 @@ Assets/Scripts/
 - 新增詞族進化結構：`Assets/Scripts/Evolution/EvolutionConfig.cs`
 - 新增詞族進化流程：`Assets/Scripts/Evolution/EvolutionManager.cs`
 - 書房可觸發進化流程（由 UI 透過 EvolutionManager 執行）
+- 詞族資料：protect / run / happy 初始詞族映射已填入設定檔

@@ -737,6 +737,208 @@
       "deviation": "positive",
       "balanceNote": "12傷(全體) < 標準20(單體)，正面偏移(-8傷換全體)",
       "dimension": "Warp"
+    },
+    {
+      "wordId": "protect",
+      "cardType": 1,
+      "energyCost": 1,
+      "effects": [
+        {
+          "type": 1,
+          "value": 10,
+          "duration": 0,
+          "description": "獲得 10 點格擋"
+        }
+      ],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
+      "deviation": "standard",
+      "balanceNote": "10擋 = 1費標準值，基線防禦卡",
+      "dimension": "Guard"
+    },
+    {
+      "wordId": "protection",
+      "cardType": 1,
+      "energyCost": 2,
+      "effects": [
+        {
+          "type": 1,
+          "value": 17,
+          "duration": 0,
+          "description": "獲得 17 點格擋"
+        }
+      ],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
+      "deviation": "standard",
+      "balanceNote": "17擋 ≈ 2費標準值",
+      "dimension": "Guard"
+    },
+    {
+      "wordId": "protective",
+      "cardType": 1,
+      "energyCost": 1,
+      "effects": [
+        {
+          "type": 1,
+          "value": 5,
+          "duration": 0,
+          "description": "獲得 5 點格擋"
+        },
+        {
+          "type": 11,
+          "value": 1,
+          "duration": 2,
+          "description": "獲得 1 點敏捷（2 回合）"
+        }
+      ],
+      "produces": [
+        "dexterity"
+      ],
+      "consumes": [],
+      "deviation": "positive",
+      "balanceNote": "5擋+短暫敏捷加成，正面偏移",
+      "dimension": "Boost"
+    },
+    {
+      "wordId": "protector",
+      "cardType": 0,
+      "energyCost": 2,
+      "effects": [
+        {
+          "type": 0,
+          "value": 8,
+          "duration": 0,
+          "description": "造成 8 點傷害"
+        },
+        {
+          "type": 1,
+          "value": 8,
+          "duration": 0,
+          "description": "獲得 8 點格擋"
+        }
+      ],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "strength"
+      ],
+      "deviation": "positive",
+      "balanceNote": "8傷+8擋 ≈ 2費標準值，攻守兼備",
+      "dimension": "Strike"
+    },
+    {
+      "wordId": "runner",
+      "cardType": 0,
+      "energyCost": 1,
+      "effects": [
+        {
+          "type": 0,
+          "value": 8,
+          "duration": 0,
+          "description": "造成 8 點傷害"
+        },
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        }
+      ],
+      "produces": [
+        "handSize"
+      ],
+      "consumes": [],
+      "deviation": "positive",
+      "balanceNote": "8傷+1抽(=6) ≈ 14，正面偏移",
+      "dimension": "Strike"
+    },
+    {
+      "wordId": "running",
+      "cardType": 1,
+      "energyCost": 0,
+      "effects": [
+        {
+          "type": 4,
+          "value": 1,
+          "duration": 0,
+          "description": "獲得 1 點能量"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
+      ],
+      "produces": [
+        "energy"
+      ],
+      "consumes": [],
+      "deviation": "negative",
+      "balanceNote": "1能量(=12) > 0費標準7，消耗抵消，負面偏移",
+      "dimension": "Warp"
+    },
+    {
+      "wordId": "happiness",
+      "cardType": 1,
+      "energyCost": 2,
+      "effects": [
+        {
+          "type": 2,
+          "value": 5,
+          "duration": 0,
+          "description": "回復 5 點生命"
+        },
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        }
+      ],
+      "produces": [
+        "handSize"
+      ],
+      "consumes": [],
+      "deviation": "standard",
+      "balanceNote": "回5血+抽1 ≈ 2費標準值",
+      "dimension": "Warp"
+    },
+    {
+      "wordId": "happily",
+      "cardType": 1,
+      "energyCost": 0,
+      "effects": [
+        {
+          "type": 4,
+          "value": 1,
+          "duration": 0,
+          "description": "獲得 1 點能量"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
+      ],
+      "produces": [
+        "energy"
+      ],
+      "consumes": [],
+      "deviation": "negative",
+      "balanceNote": "1能量(=12) > 0費標準7，消耗抵消，負面偏移",
+      "dimension": "Warp"
     }
   ]
 }

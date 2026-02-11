@@ -1,3 +1,61 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "wordId": "protect",
+      "options": [
+        {
+          "type": "Evolve",
+          "targetWordId": "protection",
+          "title": "詞族進化：protection",
+          "description": "更重型的防禦，費用更高"
+        },
+        {
+          "type": "Evolve",
+          "targetWordId": "protective",
+          "title": "詞族進化：protective",
+          "description": "轉為增益型防護"
+        },
+        {
+          "type": "Evolve",
+          "targetWordId": "protector",
+          "title": "詞族進化：protector",
+          "description": "攻守兼備的守護者"
+        }
+      ]
+    },
+    {
+      "wordId": "run",
+      "options": [
+        {
+          "type": "Evolve",
+          "targetWordId": "runner",
+          "title": "詞族進化：runner",
+          "description": "更擅長連段的跑者"
+        },
+        {
+          "type": "Evolve",
+          "targetWordId": "running",
+          "title": "詞族進化：running",
+          "description": "轉為資源操控節奏卡"
+        }
+      ]
+    },
+    {
+      "wordId": "happy",
+      "options": [
+        {
+          "type": "Evolve",
+          "targetWordId": "happiness",
+          "title": "詞族進化：happiness",
+          "description": "偏向回復與資源"
+        },
+        {
+          "type": "Evolve",
+          "targetWordId": "happily",
+          "title": "詞族進化：happily",
+          "description": "低費資源啟動卡"
+        }
+      ]
+    }
+  ]
 }
