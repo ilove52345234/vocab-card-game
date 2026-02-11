@@ -1,0 +1,128 @@
+{
+  "relics": [
+    {
+      "id": "relic_tion",
+      "name": "-tion 之印",
+      "affix": "-tion",
+      "affixMeaning": "狀態/動作",
+      "description": "答題時間 +3 秒",
+      "exampleWords": ["action", "protection", "education"],
+      "rarity": 0,
+      "category": "learning"
+    },
+    {
+      "id": "relic_ness",
+      "name": "-ness 之壁",
+      "affix": "-ness",
+      "affixMeaning": "性質",
+      "description": "每場戰鬥開始 +3 格擋",
+      "exampleWords": ["toughness", "darkness", "kindness"],
+      "rarity": 0,
+      "category": "combat"
+    },
+    {
+      "id": "relic_er",
+      "name": "-er 之刃",
+      "affix": "-er",
+      "affixMeaning": "做...的人",
+      "description": "每場戰鬥第一張攻擊卡 +4 傷害",
+      "exampleWords": ["fighter", "runner", "attacker"],
+      "rarity": 0,
+      "category": "combat"
+    },
+    {
+      "id": "relic_re",
+      "name": "Re- 之晶",
+      "affix": "re-",
+      "affixMeaning": "再次",
+      "description": "每隔一場戰鬥開始時 +1 能量",
+      "exampleWords": ["return", "rebuild", "renew"],
+      "rarity": 0,
+      "category": "combat"
+    },
+    {
+      "id": "relic_ly",
+      "name": "-ly 之鏡",
+      "affix": "-ly",
+      "affixMeaning": "方式",
+      "description": "答對時回復 2 HP",
+      "exampleWords": ["wisely", "carefully", "happily"],
+      "rarity": 1,
+      "category": "learning"
+    },
+    {
+      "id": "relic_ful",
+      "name": "-ful 之盾",
+      "affix": "-ful",
+      "affixMeaning": "充滿",
+      "description": "Guard 維度卡格擋 +2",
+      "exampleWords": ["powerful", "helpful", "careful"],
+      "rarity": 1,
+      "category": "dimension",
+      "dimension": "Guard"
+    },
+    {
+      "id": "relic_less",
+      "name": "-less 之咒",
+      "affix": "-less",
+      "affixMeaning": "沒有",
+      "description": "Strike 維度卡傷害 +2",
+      "exampleWords": ["powerless", "fearless", "endless"],
+      "rarity": 1,
+      "category": "dimension",
+      "dimension": "Strike"
+    },
+    {
+      "id": "relic_ment",
+      "name": "-ment 之珠",
+      "affix": "-ment",
+      "affixMeaning": "結果",
+      "description": "Boost 維度卡額外抽 1 牌（每回合限 1 次）",
+      "exampleWords": ["improvement", "enrichment", "achievement"],
+      "rarity": 1,
+      "category": "dimension",
+      "dimension": "Boost"
+    },
+    {
+      "id": "relic_able",
+      "name": "-able 之冠",
+      "affix": "-able",
+      "affixMeaning": "能夠",
+      "description": "答對時該卡效果 +30%（疊加熟練度加成）",
+      "exampleWords": ["capable", "remarkable", "learnable"],
+      "rarity": 2,
+      "category": "learning"
+    },
+    {
+      "id": "relic_pre",
+      "name": "Pre- 之眼",
+      "affix": "pre-",
+      "affixMeaning": "之前",
+      "description": "每回合第一張 Warp 卡費用 -1",
+      "exampleWords": ["predict", "preview", "prepare"],
+      "rarity": 2,
+      "category": "dimension",
+      "dimension": "Warp"
+    },
+    {
+      "id": "relic_un",
+      "name": "Un- 之鏡",
+      "affix": "un-",
+      "affixMeaning": "否定/反轉",
+      "description": "休息站新增第四選項：喝湯（回 15% HP + 學 1 新字）",
+      "exampleWords": ["unlock", "undo", "uncover"],
+      "rarity": 2,
+      "category": "restsite"
+    },
+    {
+      "id": "relic_dis",
+      "name": "Dis- 之羽",
+      "affix": "dis-",
+      "affixMeaning": "離開/消除",
+      "description": "首次 HP 歸零時回復到 1 HP（每場 1 次）",
+      "exampleWords": ["dismiss", "disappear", "discover"],
+      "rarity": 2,
+      "category": "combat"
+    }
+  ]
+}
