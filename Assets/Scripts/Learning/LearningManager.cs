@@ -100,6 +100,31 @@ namespace VocabCardGame.Learning
         }
 
         /// <summary>
+        /// 進化/書房專用：不受每日上限限制的解鎖
+        /// </summary>
+        public bool UnlockWordForEvolution(string wordId)
+        {
+            if (string.IsNullOrWhiteSpace(wordId)) return false;
+
+            if (!wordProgressMap.ContainsKey(wordId))
+            {
+                wordProgressMap[wordId] = new WordProgress
+                {
+                    wordId = wordId,
+                    level = ProficiencyLevel.New,
+                    lastReviewTime = DateTime.Now,
+                    nextReviewTime = DateTime.Now.AddHours(4)
+                };
+
+                GameManager.Instance.playerData.totalWordsLearned++;
+                GameManager.Instance.AddExperience(10);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// 取得單字進度
         /// </summary>
         public WordProgress GetProgress(string wordId)

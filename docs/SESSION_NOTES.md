@@ -242,3 +242,12 @@ Assets/Scripts/
 - 書房選項：預習 / 暫放 / 進化 / 深化 / 筆記（對應 LP 花費）
 - LP 儲存：`PlayerData.learningPoints`
 - 暫放卡牌與筆記資料：`PlayerData.stashedCardWordIds`、`PlayerData.wordNotes`
+
+---
+
+## 交接記錄（2026-02-11）- 詞族進化系統完成
+
+- 新增詞族進化設定：`Assets/Resources/Data/evolution_config.json`
+- 新增詞族進化結構：`Assets/Scripts/Evolution/EvolutionConfig.cs`
+- 新增詞族進化流程：`Assets/Scripts/Evolution/EvolutionManager.cs`
+- 書房可觸發進化流程（由 UI 透過 EvolutionManager 執行）

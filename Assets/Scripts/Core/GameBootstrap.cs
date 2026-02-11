@@ -36,6 +36,7 @@ namespace VocabCardGame.Core
                 gm.audioManager = CreateAudioManager();
                 gm.restSiteManager = gmObj.AddComponent<VocabCardGame.Rest.RestSiteManager>();
                 gm.studyRoomManager = gmObj.AddComponent<VocabCardGame.StudyRoom.StudyRoomManager>();
+                gm.evolutionManager = gmObj.AddComponent<VocabCardGame.Evolution.EvolutionManager>();
 
                 DontDestroyOnLoad(gmObj);
                 Debug.Log("[GameBootstrap] GameManager created successfully");

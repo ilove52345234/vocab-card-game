@@ -5,6 +5,7 @@ using UnityEngine;
 using VocabCardGame.Combat;
 using VocabCardGame.Core;
 using VocabCardGame.Data;
+using VocabCardGame.Evolution;
 using VocabCardGame.Learning;
 
 namespace VocabCardGame.StudyRoom
@@ -226,6 +227,13 @@ namespace VocabCardGame.StudyRoom
             if (card == null) return;
             if (!SpendLearningPoints(config.evolveCost)) return;
             OnEvolutionRequested?.Invoke(card);
+        }
+
+        public void ExecuteEvolutionOption(string baseWordId, EvolutionOption option)
+        {
+            var evolutionManager = GameManager.Instance?.evolutionManager;
+            if (evolutionManager == null) return;
+            evolutionManager.ExecuteEvolution(baseWordId, option);
         }
 
         public void GenerateDeepenCandidates()

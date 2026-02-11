@@ -22,6 +22,7 @@ namespace VocabCardGame.Core
         public VocabCardGame.Map.MapManager mapManager;
         public VocabCardGame.Rest.RestSiteManager restSiteManager;
         public VocabCardGame.StudyRoom.StudyRoomManager studyRoomManager;
+        public VocabCardGame.Evolution.EvolutionManager evolutionManager;
 
         [Header("Current State")]
         public PlayerData playerData;
@@ -51,6 +52,7 @@ namespace VocabCardGame.Core
                 if (mapManager == null) mapManager = FindObjectOfType<VocabCardGame.Map.MapManager>();
                 if (restSiteManager == null) restSiteManager = FindObjectOfType<VocabCardGame.Rest.RestSiteManager>();
                 if (studyRoomManager == null) studyRoomManager = FindObjectOfType<VocabCardGame.StudyRoom.StudyRoomManager>();
+                if (evolutionManager == null) evolutionManager = FindObjectOfType<VocabCardGame.Evolution.EvolutionManager>();
             }
             else
             {

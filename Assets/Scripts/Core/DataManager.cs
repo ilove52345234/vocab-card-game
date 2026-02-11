@@ -6,6 +6,7 @@ using UnityEngine;
 using VocabCardGame.Data;
 using VocabCardGame.Rest;
 using VocabCardGame.StudyRoom;
+using VocabCardGame.Evolution;
 
 namespace VocabCardGame.Core
 {
@@ -25,6 +26,7 @@ namespace VocabCardGame.Core
         private VocabCardGame.Map.MapConfig mapConfig;
         private RestSiteConfig restSiteConfig;
         private StudyRoomConfig studyRoomConfig;
+        private EvolutionConfig evolutionConfig;
 
         private string SavePath => Path.Combine(Application.persistentDataPath, "save");
 
@@ -53,6 +55,7 @@ namespace VocabCardGame.Core
             LoadMapConfig();
             LoadRestSiteConfig();
             LoadStudyRoomConfig();
+            LoadEvolutionConfig();
         }
 
         #region Word Database
@@ -75,6 +78,29 @@ namespace VocabCardGame.Core
         public WordDatabase GetWordDatabase()
         {
             return wordDatabase;
+        }
+
+        #endregion
+
+        #region Evolution Config
+
+        private void LoadEvolutionConfig()
+        {
+            var json = Resources.Load<TextAsset>("Data/evolution_config");
+            if (json != null)
+            {
+                evolutionConfig = JsonUtility.FromJson<EvolutionConfig>(json.text);
+            }
+            else
+            {
+                evolutionConfig = new EvolutionConfig();
+                Debug.LogWarning("Evolution config not found, using defaults");
+            }
+        }
+
+        public EvolutionConfig GetEvolutionConfig()
+        {
+            return evolutionConfig ?? new EvolutionConfig();
         }
 
         #endregion
