@@ -324,6 +324,7 @@ GameObject:
   - component: {fileID: 1201436714799475318}
   - component: {fileID: 537240363824951209}
   - component: {fileID: 5113049747428892309}
+  - component: {fileID: 6644556598021953295}
   - component: {fileID: 1799968892860733050}
   m_Layer: 0
   m_Name: EnemyItem
@@ -437,6 +438,26 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6644556598021953295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5962869570314379737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 320
+  m_PreferredHeight: 110
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &1799968892860733050
 MonoBehaviour:
   m_ObjectHideFlags: 0

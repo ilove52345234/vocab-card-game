@@ -159,3 +159,14 @@ vocab-card-game/
 ## License
 
 Private Project
+
+### WebGL 熱部署（檔案變動自動重建）
+
+```bash
+scripts/dev_webgl_watch.sh
+```
+
+- 預設輸出到 `Builds/WebGL_dev/`
+- 伺服器預設 `http://127.0.0.1:8000/index.html`
+- 變更 `PORT=9000 scripts/dev_webgl_watch.sh`
+- 停止：`Ctrl+C`

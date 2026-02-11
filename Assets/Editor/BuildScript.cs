@@ -56,7 +56,45 @@ namespace VocabCardGame.Editor
                 throw new Exception($"WebGL build failed: {summary.result}");
             }
 
+            TryInjectPhonePreviewCss(outputDir);
             UnityEngine.Debug.Log("[BuildScript] WebGL build succeeded: " + outputDir);
+        }
+
+        private static void TryInjectPhonePreviewCss(string outputDir)
+        {
+            try
+            {
+                string indexPath = Path.Combine(outputDir, "index.html");
+                if (!File.Exists(indexPath))
+                {
+                    return;
+                }
+
+                string html = File.ReadAllText(indexPath);
+                const string marker = "</head>";
+                if (!html.Contains(marker))
+                {
+                    return;
+                }
+
+                string css =
+                    "<style>" +
+                    "body{margin:0;background:#111;display:flex;align-items:center;justify-content:center;height:100vh;}" +
+                    "#unity-container{width:420px;height:840px;}" +
+                    "#unity-canvas{width:100%;height:100%;background:#000;border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,0.5);}" +
+                    "@media (max-width:500px){#unity-container{width:100vw;height:100vh;}#unity-canvas{border-radius:0;}}" +
+                    "</style>";
+
+                if (!html.Contains("unity-container{width:420px"))
+                {
+                    html = html.Replace(marker, css + marker);
+                    File.WriteAllText(indexPath, html);
+                }
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogWarning("[BuildScript] Failed to inject phone preview CSS: " + e.Message);
+            }
         }
 
         private static void EnsureScenes()

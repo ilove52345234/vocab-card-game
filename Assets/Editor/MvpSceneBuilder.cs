@@ -86,7 +86,12 @@ namespace VocabCardGame.Editor
             var canvasGo = new GameObject("Canvas");
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasGo.AddComponent<CanvasScaler>();
+            var scaler = canvasGo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            // 以手機直向為基準
+            scaler.referenceResolution = new Vector2(1080, 1920);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
             canvasGo.AddComponent<GraphicRaycaster>();
             return canvas;
         }
@@ -100,6 +105,9 @@ namespace VocabCardGame.Editor
             var cardImage = cardGo.AddComponent<Image>();
             cardImage.color = new Color(0.9f, 0.9f, 0.9f, 1f);
             cardGo.AddComponent<Button>();
+            var cardLayout = cardGo.AddComponent<LayoutElement>();
+            cardLayout.preferredWidth = 140;
+            cardLayout.preferredHeight = 180;
             var cardTextGo = new GameObject("Text", typeof(RectTransform));
             cardTextGo.transform.SetParent(cardGo.transform);
             var cardText = cardTextGo.AddComponent<Text>();
@@ -118,6 +126,9 @@ namespace VocabCardGame.Editor
             var enemyImage = enemyGo.AddComponent<Image>();
             enemyImage.color = new Color(0.95f, 0.95f, 1f, 1f);
             var enemyButton = enemyGo.AddComponent<Button>();
+            var enemyLayout = enemyGo.AddComponent<LayoutElement>();
+            enemyLayout.preferredWidth = 320;
+            enemyLayout.preferredHeight = 110;
 
             var selectionGo = new GameObject("Selection", typeof(RectTransform));
             selectionGo.transform.SetParent(enemyGo.transform);
@@ -150,11 +161,16 @@ namespace VocabCardGame.Editor
 
             var controller = root.AddComponent<CombatUIController>();
 
+            StretchToParent(root.GetComponent<RectTransform>());
+
+            // Top HUD (Slay the Spire-like)
             var topBar = CreateUiObject("TopBar", root.transform);
             var topLayout = topBar.AddComponent<HorizontalLayoutGroup>();
             topLayout.childAlignment = TextAnchor.MiddleCenter;
-            topLayout.spacing = 10;
-            SetRect(topBar.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0, -20), new Vector2(0, 60));
+            topLayout.spacing = 12;
+            topLayout.childForceExpandHeight = false;
+            topLayout.childForceExpandWidth = false;
+            SetRect(topBar.GetComponent<RectTransform>(), new Vector2(0.05f, 0.92f), new Vector2(0.95f, 0.98f), Vector2.zero, Vector2.zero);
 
             controller.playerHpText = CreateInlineText(topBar.transform, font, "HP");
             controller.playerBlockText = CreateInlineText(topBar.transform, font, "Block");
@@ -162,26 +178,35 @@ namespace VocabCardGame.Editor
             controller.turnText = CreateInlineText(topBar.transform, font, "Turn");
             controller.stateText = CreateInlineText(topBar.transform, font, "State");
 
+            // Enemy area center
             var enemyArea = CreateUiObject("EnemyArea", root.transform);
             var enemyLayout = enemyArea.AddComponent<VerticalLayoutGroup>();
             enemyLayout.childAlignment = TextAnchor.UpperCenter;
             enemyLayout.spacing = 8;
-            SetRect(enemyArea.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0, -100), new Vector2(0, 240));
+            enemyLayout.childForceExpandWidth = false;
+            SetRect(enemyArea.GetComponent<RectTransform>(), new Vector2(0.10f, 0.38f), new Vector2(0.90f, 0.86f), Vector2.zero, Vector2.zero);
 
             controller.enemyContainer = enemyArea.transform;
             controller.enemyItemPrefab = enemyPrefab;
 
+            // Hand row bottom
             var handArea = CreateUiObject("HandArea", root.transform);
             var handLayout = handArea.AddComponent<HorizontalLayoutGroup>();
             handLayout.childAlignment = TextAnchor.MiddleCenter;
-            handLayout.spacing = 8;
-            SetRect(handArea.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0, 60), new Vector2(0, 160));
+            handLayout.spacing = 12;
+            handLayout.childForceExpandHeight = false;
+            handLayout.childForceExpandWidth = false;
+            SetRect(handArea.GetComponent<RectTransform>(), new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.28f), Vector2.zero, Vector2.zero);
 
             controller.handContainer = handArea.transform;
             controller.cardButtonPrefab = cardPrefab;
 
+            // End turn button right-middle
             var endTurnGo = CreateButton(root.transform, font, "End Turn");
-            SetRect(endTurnGo.GetComponent<RectTransform>(), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-80, 20), new Vector2(140, 50));
+            var endLayout = endTurnGo.AddComponent<LayoutElement>();
+            endLayout.preferredWidth = 240;
+            endLayout.preferredHeight = 80;
+            SetRect(endTurnGo.GetComponent<RectTransform>(), new Vector2(0.78f, 0.34f), new Vector2(0.98f, 0.44f), Vector2.zero, Vector2.zero);
             controller.endTurnButton = endTurnGo.GetComponent<Button>();
 
             return root;

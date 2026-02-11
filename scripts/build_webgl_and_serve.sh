@@ -9,6 +9,7 @@ WAIT_FOR_SERVER="${WAIT_FOR_SERVER:-1}"
 
 TIMESTAMP="$(date +"%Y%m%d_%H%M%S")"
 BUILD_DIR="$PROJECT_PATH/Builds/WebGL_${TIMESTAMP}"
+LATEST_DIR="$PROJECT_PATH/Builds/WebGL_latest"
 UNITY_LOG="$BUILD_DIR/unity_build.log"
 
 mkdir -p "$BUILD_DIR"
@@ -21,9 +22,12 @@ BUILD_OUTPUT="$BUILD_DIR" "$UNITY_BIN" -batchmode -quit \
 echo "Build complete: $BUILD_DIR"
 echo "Unity log: $UNITY_LOG"
 
+mkdir -p "$LATEST_DIR"
+rsync -a --delete "$BUILD_DIR/" "$LATEST_DIR/"
+
 if [ "$SERVE" = "1" ]; then
-  cd "$BUILD_DIR"
-  python3 -m http.server "$PORT" &
+  cd "$LATEST_DIR"
+  /opt/homebrew/bin/python3 -m http.server "$PORT" --bind 127.0.0.1 &
   SERVER_PID=$!
 
   URL="http://localhost:${PORT}"
