@@ -95,6 +95,9 @@ namespace VocabCardGame.Data
     {
         public string id;
         public string name;
+        public EnemyCategory category;   // normal/elite/boss
+        public Dimension? testsDimension; // 精英怪測試的維度
+        public string specialMechanic;   // 特殊機制描述
         public int maxHp;
         public Element element;
         public Sprite sprite;

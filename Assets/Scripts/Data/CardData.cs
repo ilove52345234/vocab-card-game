@@ -60,6 +60,7 @@ namespace VocabCardGame.Data
         public CardType cardType;       // 卡牌類型
         public int energyCost;          // 能量消耗
         public List<CardEffect> effects = new List<CardEffect>(); // 效果列表
+        public Dimension dimension;      // 卡牌維度（Strike/Guard/Boost/Warp）
         public string[] produces;       // 產出的資源媒介標籤
         public string[] consumes;       // 消費/受益的資源媒介標籤
         public string deviation;        // 偏移方法：standard, positive, negative, condition
@@ -161,7 +162,7 @@ namespace VocabCardGame.Data
     }
 
     /// <summary>
-    /// 遺物資料
+    /// 遺物資料（三層構詞學：字首/字尾/字根）
     /// </summary>
     [Serializable]
     public class RelicData
@@ -169,21 +170,13 @@ namespace VocabCardGame.Data
         public string id;
         public string name;
         public string description;
+        public RelicMorphType type;      // 構詞類型：prefix/suffix/root
+        public string affix;             // 字首/字尾/字根文字
+        public string affixMeaning;      // 語意
+        public string[] exampleWords;    // 相關單字範例
         public Rarity rarity;
-        public RelicEffectType effectType;
-        public float effectValue;
-        public Sprite icon;
-    }
-
-    public enum RelicEffectType
-    {
-        MaxHpBonus,         // 最大生命加成
-        StartingEnergy,     // 起始能量加成
-        CardDraw,           // 額外抽牌
-        QuizTimeBonus,      // 答題時間加成
-        HealOnCorrect,      // 答對回血
-        DamageOnWrong,      // 答錯扣血
-        ElementDamageBonus, // 元素傷害加成
-        GoldBonus           // 金幣加成
+        public string category;          // trigger/amplifier/foundation
+        public Dimension? dimension;     // 關聯維度（部分遺物有）
+        public string lexiconBonus;      // 詞庫連動描述（字根遺物用）
     }
 }

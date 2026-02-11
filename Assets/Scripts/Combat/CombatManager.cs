@@ -311,10 +311,13 @@ namespace VocabCardGame.Combat
                 consecutiveAttacks = 0;
             }
 
+            // 取得卡牌元素（用於元素弱點/抗性計算）
+            Element? cardElement = card.wordData?.element;
+
             // 執行效果
             foreach (var effect in card.effects)
             {
-                ExecuteEffect(effect, target, multiplier);
+                ExecuteEffect(effect, target, multiplier, cardElement);
             }
 
             // 檢查姿態觸發
@@ -345,17 +348,17 @@ namespace VocabCardGame.Combat
         /// <summary>
         /// 執行單個效果
         /// </summary>
-        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier)
+        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, Element? cardElement = null)
         {
             int value = Mathf.RoundToInt(effect.value * multiplier);
 
             // 計算姿態加成
             value = ApplyStanceModifier(effect.type, value);
 
-            // 計算元素相剋
-            if (target != null)
+            // 計算元素弱點/抗性
+            if (target != null && cardElement.HasValue)
             {
-                value = ApplyElementModifier(effect.type, value, target);
+                value = ApplyElementModifier(effect.type, value, target, cardElement.Value);
             }
 
             switch (effect.type)
@@ -371,7 +374,9 @@ namespace VocabCardGame.Combat
                 case CardEffectType.DamageAll:
                     foreach (var enemy in enemies.Where(e => e.entity.IsAlive))
                     {
-                        int dmg = ApplyElementModifier(effect.type, value, enemy);
+                        int dmg = cardElement.HasValue
+                            ? ApplyElementModifier(effect.type, value, enemy, cardElement.Value)
+                            : value;
                         enemy.entity.TakeDamage(dmg);
                         OnEnemyDamaged?.Invoke(enemy, dmg);
                     }
@@ -442,13 +447,30 @@ namespace VocabCardGame.Combat
             return value;
         }
 
-        private int ApplyElementModifier(CardEffectType effectType, int value, EnemyInstance enemy)
+        /// <summary>
+        /// 計算元素弱點/抗性倍率
+        /// 弱點：傷害 ×1.5、抗性：傷害 ×0.5
+        /// </summary>
+        private int ApplyElementModifier(CardEffectType effectType, int value, EnemyInstance enemy, Element cardElement)
         {
             if (effectType != CardEffectType.Damage && effectType != CardEffectType.DamageAll)
                 return value;
 
-            // TODO: 取得卡牌元素，計算相剋
-            // 暫時返回原值
+            var enemyData = enemy.data;
+            if (enemyData == null) return value;
+
+            // 弱點：+50% 傷害
+            if (enemyData.weakness.HasValue && enemyData.weakness.Value == cardElement)
+            {
+                return Mathf.RoundToInt(value * 1.5f);
+            }
+
+            // 抗性：-50% 傷害
+            if (enemyData.resistance.HasValue && enemyData.resistance.Value == cardElement)
+            {
+                return Mathf.RoundToInt(value * 0.5f);
+            }
+
             return value;
         }
 

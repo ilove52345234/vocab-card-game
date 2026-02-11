@@ -129,4 +129,35 @@ namespace VocabCardGame.Data
         Beginner,       // 初級期 Day 3-4
         Normal          // 正常期 Day 5+
     }
+
+    /// <summary>
+    /// 卡牌維度（詞性→戰鬥角色）
+    /// </summary>
+    public enum Dimension
+    {
+        Strike,     // 動詞(動作) + 有生/武器名詞 → 造成傷害
+        Guard,      // 物品/建築/食物/植物名詞 → 格擋回血
+        Boost,      // 形容詞 + 副詞 + 心智動詞 → 增益弱化
+        Warp        // 抽象名詞 + 數詞 → 資源操控
+    }
+
+    /// <summary>
+    /// 敵人類別
+    /// </summary>
+    public enum EnemyCategory
+    {
+        Normal,     // 普通敵人
+        Elite,      // 精英怪
+        Boss        // Boss
+    }
+
+    /// <summary>
+    /// 遺物構詞類型
+    /// </summary>
+    public enum RelicMorphType
+    {
+        Prefix,     // 字首：觸發型
+        Suffix,     // 字尾：增幅型
+        Root        // 字根：基石型 + 詞庫連動
+    }
 }

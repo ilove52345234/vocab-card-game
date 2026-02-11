@@ -105,6 +105,11 @@ namespace VocabCardGame.Core
             return cardDatabase.FindAll(c => c.wordData?.element == element);
         }
 
+        public List<CardData> GetCardsByDimension(Dimension dimension)
+        {
+            return cardDatabase.FindAll(c => c.dimension == dimension);
+        }
+
         #endregion
 
         #region Enemy Database
@@ -127,6 +132,11 @@ namespace VocabCardGame.Core
         public EnemyData GetEnemy(string id)
         {
             return enemyDatabase.Find(e => e.id == id);
+        }
+
+        public List<EnemyData> GetEnemiesByCategory(EnemyCategory category)
+        {
+            return enemyDatabase.FindAll(e => e.category == category);
         }
 
         public List<EnemyData> GetEnemiesForFloor(int floor, GameMode mode)
