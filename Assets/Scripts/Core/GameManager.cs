@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using VocabCardGame.Combat;
 using VocabCardGame.Data;
@@ -143,6 +144,35 @@ namespace VocabCardGame.Core
         }
 
         /// <summary>
+        /// 取得目前啟用中的遺物列表
+        /// </summary>
+        public IReadOnlyList<string> GetActiveRelics()
+        {
+            if (playerData == null) return Array.Empty<string>();
+            if (playerData.equippedRelics != null && playerData.equippedRelics.Count > 0)
+            {
+                return playerData.equippedRelics;
+            }
+            return playerData.ownedRelics ?? Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// 是否持有指定遺物
+        /// </summary>
+        public bool HasRelic(string relicId)
+        {
+            return GetActiveRelics().Contains(relicId);
+        }
+
+        /// <summary>
+        /// 取得遺物效果設定
+        /// </summary>
+        public RelicEffectEntry GetRelicEffect(string relicId)
+        {
+            return dataManager?.GetRelicEffect(relicId);
+        }
+
+        /// <summary>
         /// 增加金幣
         /// </summary>
         public void AddGold(int amount)
@@ -217,6 +247,16 @@ namespace VocabCardGame.Core
 
             // 智力加成
             baseTime += playerData.QuizTimeBonus;
+
+            // 遺物加成：-tion 之印
+            if (HasRelic("relic_tion"))
+            {
+                var effect = GetRelicEffect("relic_tion");
+                if (effect != null && effect.type == RelicEffectType.QuizTimeBonus)
+                {
+                    baseTime += effect.intValue;
+                }
+            }
 
             return baseTime;
         }

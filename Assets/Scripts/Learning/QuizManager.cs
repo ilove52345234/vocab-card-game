@@ -23,6 +23,7 @@ namespace VocabCardGame.Learning
         [Header("Quiz Options")]
         public List<QuizOption> currentOptions = new List<QuizOption>();
         public int correctOptionIndex;
+        public string hintText;
 
         // 回呼
         private Action<bool, int> onQuizComplete;
@@ -32,6 +33,7 @@ namespace VocabCardGame.Learning
         public event Action<List<QuizOption>, int> OnOptionsGenerated;
         public event Action<float> OnTimeUpdated;
         public event Action<bool> OnQuizEnded;
+        public event Action<string> OnHintUpdated;
 
         private void Awake()
         {
@@ -75,6 +77,9 @@ namespace VocabCardGame.Learning
             // 生成選項
             GenerateOptions();
 
+            // 額外提示（遺物）
+            UpdateHint();
+
             isQuizActive = true;
             OnQuizStarted?.Invoke(currentMode, timeRemaining);
         }
@@ -85,6 +90,7 @@ namespace VocabCardGame.Learning
         private void GenerateOptions()
         {
             currentOptions.Clear();
+            hintText = string.Empty;
             var wordDb = GameManager.Instance.dataManager.GetWordDatabase();
             var targetWord = wordDb.GetWord(currentCard.wordId);
 
@@ -123,6 +129,33 @@ namespace VocabCardGame.Learning
             }
 
             OnOptionsGenerated?.Invoke(currentOptions, correctOptionIndex);
+        }
+
+        private void UpdateHint()
+        {
+            if (!GameManager.Instance.HasRelic("relic_spec"))
+            {
+                OnHintUpdated?.Invoke(string.Empty);
+                return;
+            }
+
+            var effect = GameManager.Instance.GetRelicEffect("relic_spec");
+            if (effect == null || effect.type != RelicEffectType.QuizHintFirstLetter)
+            {
+                OnHintUpdated?.Invoke(string.Empty);
+                return;
+            }
+
+            var wordDb = GameManager.Instance.dataManager.GetWordDatabase();
+            var targetWord = wordDb.GetWord(currentCard.wordId);
+            if (targetWord == null || string.IsNullOrEmpty(targetWord.english))
+            {
+                OnHintUpdated?.Invoke(string.Empty);
+                return;
+            }
+
+            hintText = targetWord.english.Substring(0, 1);
+            OnHintUpdated?.Invoke(hintText);
         }
 
         private void GenerateRecognitionOptions(WordData targetWord, OptionDifficulty difficulty)

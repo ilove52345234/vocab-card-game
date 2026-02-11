@@ -148,7 +148,7 @@ Assets/Scripts/
 
 ### 下一步
 
-- **順序 6：遺物效果實作**
+- **順序 7：地圖生成**
 - 詳見 `docs/IMPLEMENTATION_STATUS.md`
 
 ---
@@ -177,3 +177,13 @@ Assets/Scripts/
 - 書蟲：玩家使用非攻擊牌時 +1 力量；答錯額外 +1 力量
 - 石像鬼：前 3 回合沉睡不行動、每回合 +3 力量；醒後攻擊翻倍；沉睡期答對可削弱力量
 - 墨水怪：每回合加入 1 張墨漬廢牌；手中有墨漬時答對可消除
+
+---
+
+## 交接記錄（2026-02-11）- 遺物效果實作完成
+
+- 新增遺物效果設定：`Assets/Resources/Data/relic_effects.json`
+- 新增遺物效果資料結構：`Assets/Scripts/Data/RelicEffectData.cs`
+- `DataManager` 載入遺物效果設定
+- 戰鬥/答題遺物已落地（re/dis/pre/over/mis/tion/ness/er/ful/less/ly/port/ject/struct/spec/tract/rupt）
+- 休息站選項（relic_un）待休息站系統完成後接入

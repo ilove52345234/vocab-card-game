@@ -53,6 +53,14 @@ namespace VocabCardGame.Combat
         private int insightTokensThisTurn = 0;
         private bool lastCardWasHighProficiency = false;
         private const string InkStainCardId = "ink_stain";
+        private readonly HashSet<string> activeRelicIds = new HashSet<string>();
+        private readonly Dictionary<string, RelicEffectEntry> activeRelicEffects = new Dictionary<string, RelicEffectEntry>();
+        private bool relicReUsed = false;
+        private bool relicDisUsed = false;
+        private bool relicErUsed = false;
+        private bool relicTractUsedThisTurn = false;
+        private bool relicPortUsedThisTurn = false;
+        private bool relicStructUsedThisTurn = false;
 
         // 事件
         public event Action<CombatState> OnCombatStateChanged;
@@ -120,6 +128,7 @@ namespace VocabCardGame.Combat
             InitializeDimensionChain();
             InitializeElementResonance();
             InitializeKnowledgeResonance();
+            InitializeRelicEffects();
 
             // 創建敵人實例
             enemies.Clear();
@@ -133,6 +142,8 @@ namespace VocabCardGame.Combat
             {
                 enemy.DecideNextAction();
             }
+
+            ApplyRelicStartCombatEffects();
 
             // 洗牌
             ShuffleDeck();
@@ -167,6 +178,7 @@ namespace VocabCardGame.Combat
             correctAnswersThisTurn = 0;
             ResetResourcePool();
             ResetSynergyTurnState();
+            ResetRelicTurnState();
 
             // 重置能量
             currentEnergy = maxEnergy;
@@ -244,20 +256,40 @@ namespace VocabCardGame.Combat
         {
             currentState = CombatState.PlayerTurn;
 
-            // 更新學習進度
-            card.progress?.UpdateProgress(isCorrect, quality);
-            GameManager.Instance.learningManager.OnAnswerResult(isCorrect);
+            bool isCorrectForEffect = isCorrect;
+            bool countForProgress = isCorrect;
 
-            if (isCorrect)
+            if (!isCorrect && HasRelic("relic_mis"))
+            {
+                var effect = GetRelicEffect("relic_mis");
+                if (effect != null && effect.type == RelicEffectType.MistakeConvert)
+                {
+                    if (UnityEngine.Random.value < effect.floatValue)
+                    {
+                        isCorrectForEffect = true;
+                        countForProgress = false;
+                    }
+                }
+            }
+
+            if (countForProgress)
+            {
+                card.progress?.UpdateProgress(isCorrect, quality);
+                GameManager.Instance.learningManager.OnAnswerResult(isCorrect);
+            }
+
+            if (isCorrectForEffect)
             {
                 correctAnswersThisTurn++;
                 GameManager.Instance.AddExperience(GetExpForQuizMode(card.GetQuizMode()));
 
-            // 執行卡牌效果
-            ExecuteCard(card, target, card.GetEffectMultiplier(), energyCostSpent);
+                // 執行卡牌效果
+                ExecuteCard(card, target, card.GetEffectMultiplier(), energyCostSpent);
 
-            // 檢查專注姿態
-            CheckFocusedStance();
+                // 檢查專注姿態
+                CheckFocusedStance();
+
+                ApplyRelicOnCorrect(target);
             }
             else
             {
@@ -282,6 +314,7 @@ namespace VocabCardGame.Combat
                     hand.Remove(card);
                     discardPile.Add(card);
                     ConsumeCostReduction();
+                    ConsumePortReduction(card);
                 }
 
                 // 離開專注姿態
@@ -291,7 +324,7 @@ namespace VocabCardGame.Combat
                 }
             }
 
-            if (isCorrect)
+            if (isCorrectForEffect)
             {
                 WeakenSleepingGargoyleOnCorrect(true);
                 RemoveInkStainOnCorrect();
@@ -331,6 +364,7 @@ namespace VocabCardGame.Combat
             currentEnergy -= energyCostSpent;
             hand.Remove(card);
             ConsumeCostReduction();
+            ConsumePortReduction(card);
 
             // 記錄打出的卡牌
             cardsPlayedThisTurn.Add(card.wordId);
@@ -357,11 +391,12 @@ namespace VocabCardGame.Combat
 
             // 先消費資源媒介，再執行效果
             float resourceBonus = ConsumeResources(card);
+            float lexiconBonus = GetLexiconBonus(card);
 
             // 執行效果
             foreach (var effect in card.effects)
             {
-                ExecuteEffect(effect, target, multiplier, resourceBonus, dimensionBonus, knowledgeBonus, cardElement);
+                ExecuteEffect(effect, target, multiplier, resourceBonus, dimensionBonus, knowledgeBonus, lexiconBonus, cardElement, card);
             }
 
             // 檢查姿態觸發
@@ -392,6 +427,9 @@ namespace VocabCardGame.Combat
                 discardPile.Add(card);
             }
 
+            // 遺物：re- 首張回手
+            ApplyRelicReturnFirstCard(card);
+
             OnCardPlayed?.Invoke(card);
 
             // 檢查戰鬥結束
@@ -401,7 +439,7 @@ namespace VocabCardGame.Combat
         /// <summary>
         /// 執行單個效果
         /// </summary>
-        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, float resourceBonus, float dimensionBonus, float knowledgeBonus, Element? cardElement = null)
+        private void ExecuteEffect(CardEffect effect, EnemyInstance target, float multiplier, float resourceBonus, float dimensionBonus, float knowledgeBonus, float lexiconBonus, Element? cardElement = null, CardData card = null)
         {
             int value = Mathf.RoundToInt(effect.value * multiplier);
 
@@ -418,6 +456,16 @@ namespace VocabCardGame.Combat
             if (knowledgeBonus > 0f && ShouldApplyKnowledgeBonus(effect.type))
             {
                 value = Mathf.RoundToInt(value * (1f + knowledgeBonus));
+            }
+
+            if (lexiconBonus > 0f && ShouldApplyLexiconBonus(effect.type))
+            {
+                value = Mathf.RoundToInt(value * (1f + lexiconBonus));
+            }
+
+            if (card != null)
+            {
+                value = ApplyRelicEffectValueBonus(card, effect.type, value);
             }
 
             // 計算姿態加成
@@ -454,7 +502,7 @@ namespace VocabCardGame.Combat
                     break;
 
                 case CardEffectType.Block:
-                    player.AddBlock(value);
+                    AddBlockWithRelic(value);
                     break;
 
                 case CardEffectType.Heal:
@@ -784,7 +832,7 @@ namespace VocabCardGame.Combat
                     break;
                 case Element.Matter:
                     int blockValue = tier == 2 ? elementConfig.matterBlock2 : elementConfig.matterBlock3 - elementConfig.matterBlock2;
-                    if (blockValue > 0) player.AddBlock(blockValue);
+                    if (blockValue > 0) AddBlockWithRelic(blockValue);
                     break;
                 case Element.Abstract:
                     int reductionCount = tier == 2 ? elementConfig.abstractCostReduction2 : elementConfig.abstractCostReduction3;
@@ -856,8 +904,24 @@ namespace VocabCardGame.Combat
         /// </summary>
         private int GetEffectiveEnergyCost(CardData card)
         {
-            if (pendingCostReductionCount <= 0) return card.energyCost;
-            return Mathf.Max(0, card.energyCost - 1);
+            int reduction = 0;
+
+            if (pendingCostReductionCount > 0)
+            {
+                reduction += 1;
+            }
+
+            if (!relicPortUsedThisTurn && card != null && card.dimension == Dimension.Warp && HasRelic("relic_port"))
+            {
+                var effect = GetRelicEffect("relic_port");
+                if (effect != null && effect.type == RelicEffectType.FirstDimensionCostReduction
+                    && IsRelicDimensionMatch(effect, card.dimension))
+                {
+                    reduction += Mathf.Max(1, effect.intValue);
+                }
+            }
+
+            return Mathf.Max(0, card.energyCost - reduction);
         }
 
         private void ConsumeCostReduction()
@@ -865,6 +929,245 @@ namespace VocabCardGame.Combat
             if (pendingCostReductionCount > 0)
             {
                 pendingCostReductionCount--;
+            }
+        }
+
+        private void ConsumePortReduction(CardData card)
+        {
+            if (relicPortUsedThisTurn) return;
+            if (card == null || card.dimension != Dimension.Warp) return;
+            if (!HasRelic("relic_port")) return;
+            var effect = GetRelicEffect("relic_port");
+            if (effect == null || effect.type != RelicEffectType.FirstDimensionCostReduction) return;
+
+            relicPortUsedThisTurn = true;
+        }
+
+        private void InitializeRelicEffects()
+        {
+            activeRelicIds.Clear();
+            activeRelicEffects.Clear();
+            var gameManager = GameManager.Instance;
+            foreach (var relicId in gameManager.GetActiveRelics())
+            {
+                if (string.IsNullOrWhiteSpace(relicId)) continue;
+                activeRelicIds.Add(relicId);
+                var effect = gameManager.GetRelicEffect(relicId);
+                if (effect != null)
+                {
+                    activeRelicEffects[relicId] = effect;
+                }
+            }
+
+            relicReUsed = false;
+            relicDisUsed = false;
+            relicErUsed = false;
+        }
+
+        private void ResetRelicTurnState()
+        {
+            relicTractUsedThisTurn = false;
+            relicPortUsedThisTurn = false;
+            relicStructUsedThisTurn = false;
+        }
+
+        private bool HasRelic(string relicId)
+        {
+            return activeRelicIds.Contains(relicId);
+        }
+
+        private RelicEffectEntry GetRelicEffect(string relicId)
+        {
+            activeRelicEffects.TryGetValue(relicId, out var effect);
+            return effect;
+        }
+
+        private void ApplyRelicStartCombatEffects()
+        {
+            if (HasRelic("relic_ness"))
+            {
+                var effect = GetRelicEffect("relic_ness");
+                if (effect != null && effect.type == RelicEffectType.StartBlock)
+                {
+                    player.AddBlock(effect.intValue);
+                }
+            }
+
+            if (HasRelic("relic_pre"))
+            {
+                var effect = GetRelicEffect("relic_pre");
+                if (effect != null && effect.type == RelicEffectType.PreviewEnemyActions)
+                {
+                    foreach (var enemy in enemies)
+                    {
+                        enemy.PreparePreview(effect.intValue);
+                    }
+                }
+            }
+        }
+
+        private void ApplyRelicOnCorrect(EnemyInstance target)
+        {
+            if (HasRelic("relic_ly"))
+            {
+                var effect = GetRelicEffect("relic_ly");
+                if (effect != null && effect.type == RelicEffectType.HealOnCorrect && effect.intValue > 0)
+                {
+                    player.Heal(effect.intValue);
+                }
+            }
+
+            if (HasRelic("relic_rupt"))
+            {
+                var effect = GetRelicEffect("relic_rupt");
+                if (effect != null && effect.type == RelicEffectType.RemoveEnemyBlockOnCorrect)
+                {
+                    if (UnityEngine.Random.value < effect.floatValue)
+                    {
+                        var enemy = target ?? enemies.FirstOrDefault(e => e.entity.IsAlive);
+                        if (enemy != null)
+                        {
+                            enemy.entity.block = Mathf.Max(0, enemy.entity.block - effect.intValue);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ApplyRelicReturnFirstCard(CardData card)
+        {
+            if (relicReUsed) return;
+            if (!HasRelic("relic_re")) return;
+            var effect = GetRelicEffect("relic_re");
+            if (effect == null || effect.type != RelicEffectType.ReturnFirstCard) return;
+
+            relicReUsed = true;
+
+            if (discardPile.Remove(card) || exhaustPile.Remove(card))
+            {
+                hand.Add(card);
+            }
+        }
+
+        private int ApplyRelicEffectValueBonus(CardData card, CardEffectType effectType, int value)
+        {
+            if (card == null) return value;
+
+            if (HasRelic("relic_er") && !relicErUsed && card.cardType == CardType.Attack &&
+                (effectType == CardEffectType.Damage || effectType == CardEffectType.DamageAll))
+            {
+                var effect = GetRelicEffect("relic_er");
+                if (effect != null && effect.type == RelicEffectType.FirstAttackBonus)
+                {
+                    value += effect.intValue;
+                    relicErUsed = true;
+                }
+            }
+
+            if (HasRelic("relic_less") && card.dimension == Dimension.Strike &&
+                (effectType == CardEffectType.Damage || effectType == CardEffectType.DamageAll))
+            {
+                var effect = GetRelicEffect("relic_less");
+                if (effect != null && effect.type == RelicEffectType.DimensionDamageBonus
+                    && IsRelicDimensionMatch(effect, card.dimension))
+                {
+                    value += effect.intValue;
+                }
+            }
+
+            if (HasRelic("relic_ful") && card.dimension == Dimension.Guard &&
+                effectType == CardEffectType.Block)
+            {
+                var effect = GetRelicEffect("relic_ful");
+                if (effect != null && effect.type == RelicEffectType.DimensionBlockBonus
+                    && IsRelicDimensionMatch(effect, card.dimension))
+                {
+                    value += effect.intValue;
+                }
+            }
+
+            if (HasRelic("relic_tract") && !relicTractUsedThisTurn && card.dimension == Dimension.Boost)
+            {
+                var effect = GetRelicEffect("relic_tract");
+                if (effect != null && effect.type == RelicEffectType.DimensionDrawOncePerTurn
+                    && IsRelicDimensionMatch(effect, card.dimension))
+                {
+                    for (int i = 0; i < Mathf.Max(1, effect.intValue); i++) DrawCard();
+                    relicTractUsedThisTurn = true;
+                }
+            }
+
+            return value;
+        }
+
+        private int ApplyStructBlockBonus(int value)
+        {
+            if (relicStructUsedThisTurn) return value;
+            if (!HasRelic("relic_struct")) return value;
+            var effect = GetRelicEffect("relic_struct");
+            if (effect == null || effect.type != RelicEffectType.BlockPerTurn) return value;
+
+            relicStructUsedThisTurn = true;
+            return value + effect.intValue;
+        }
+
+        private void AddBlockWithRelic(int value)
+        {
+            player.AddBlock(ApplyStructBlockBonus(value));
+        }
+
+        private float GetLexiconBonus(CardData card)
+        {
+            if (card == null || card.wordData == null || string.IsNullOrEmpty(card.wordData.english)) return 0f;
+            float maxBonus = 0f;
+            foreach (var relicId in activeRelicIds)
+            {
+                var effect = GetRelicEffect(relicId);
+                if (effect == null || effect.lexiconBonus <= 0f) continue;
+
+                var relicData = GameManager.Instance.dataManager.GetRelic(relicId);
+                if (relicData == null || string.IsNullOrEmpty(relicData.affix)) continue;
+
+                if (card.wordData.english.IndexOf(relicData.affix, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    if (effect.lexiconBonus > maxBonus) maxBonus = effect.lexiconBonus;
+                }
+            }
+            return maxBonus;
+        }
+
+        private bool ShouldApplyLexiconBonus(CardEffectType effectType)
+        {
+            return effectType == CardEffectType.Damage
+                || effectType == CardEffectType.DamageAll
+                || effectType == CardEffectType.Block
+                || effectType == CardEffectType.Heal
+                || effectType == CardEffectType.DrawCard
+                || effectType == CardEffectType.GainEnergy;
+        }
+
+        private bool IsRelicDimensionMatch(RelicEffectEntry effect, Dimension dimension)
+        {
+            if (effect == null || string.IsNullOrEmpty(effect.dimension)) return true;
+            return Enum.TryParse(effect.dimension, out Dimension parsed) && parsed == dimension;
+        }
+
+        private void DiscardCard(CardData card)
+        {
+            if (card == null) return;
+            discardPile.Add(card);
+            if (HasRelic("relic_ject"))
+            {
+                var effect = GetRelicEffect("relic_ject");
+                if (effect != null && effect.type == RelicEffectType.DamageOnDiscard)
+                {
+                    var enemy = enemies.FirstOrDefault(e => e.entity.IsAlive);
+                    if (enemy != null)
+                    {
+                        enemy.entity.TakeDamage(effect.intValue);
+                        OnEnemyDamaged?.Invoke(enemy, effect.intValue);
+                    }
+                }
             }
         }
 
@@ -945,8 +1248,25 @@ namespace VocabCardGame.Combat
             int times = IsGargoyle(enemy) && enemy.sleepTurnsRemaining == 0 ? 2 : 1;
             for (int i = 0; i < times; i++)
             {
+                int reflectDamage = 0;
+                if (HasRelic("relic_over") && player.block > value)
+                {
+                    var effect = GetRelicEffect("relic_over");
+                    if (effect != null && effect.type == RelicEffectType.OverblockReflect)
+                    {
+                        int overflow = player.block - value;
+                        reflectDamage = Mathf.RoundToInt(overflow * effect.floatValue);
+                    }
+                }
+
                 player.TakeDamage(value);
                 OnPlayerDamaged?.Invoke(value);
+
+                if (reflectDamage > 0 && enemy != null)
+                {
+                    enemy.entity.TakeDamage(reflectDamage);
+                    OnEnemyDamaged?.Invoke(enemy, reflectDamage);
+                }
             }
         }
 
@@ -1109,13 +1429,17 @@ namespace VocabCardGame.Combat
                 for (int i = 0; i < 2 && hand.Count > 0; i++)
                 {
                     int idx = UnityEngine.Random.Range(0, hand.Count);
-                    discardPile.Add(hand[idx]);
+                    var card = hand[idx];
                     hand.RemoveAt(idx);
+                    DiscardCard(card);
                 }
             }
 
             // 手牌進入棄牌堆
-            discardPile.AddRange(hand);
+            foreach (var card in hand.ToList())
+            {
+                DiscardCard(card);
+            }
             hand.Clear();
 
             // 處理玩家回合結束效果
@@ -1236,6 +1560,17 @@ namespace VocabCardGame.Combat
             // 玩家死亡
             if (!player.IsAlive)
             {
+                if (!relicDisUsed && HasRelic("relic_dis"))
+                {
+                    var effect = GetRelicEffect("relic_dis");
+                    if (effect != null && effect.type == RelicEffectType.SurviveOnce)
+                    {
+                        player.currentHp = Mathf.Max(1, effect.intValue);
+                        relicDisUsed = true;
+                        return false;
+                    }
+                }
+
                 currentState = CombatState.Defeat;
                 OnCombatStateChanged?.Invoke(currentState);
                 OnCombatEnd?.Invoke(false);
@@ -1287,6 +1622,7 @@ namespace VocabCardGame.Combat
         public CombatEntity entity;
         public EnemyAction currentAction;
         public int sleepTurnsRemaining;
+        public List<EnemyAction> previewActions = new List<EnemyAction>();
 
         public EnemyInstance(EnemyData data)
         {
@@ -1302,8 +1638,22 @@ namespace VocabCardGame.Combat
         public void DecideNextAction()
         {
             if (data.actions.Count == 0) return;
+            currentAction = RollAction();
+        }
 
-            // 根據權重隨機選擇
+        public void PreparePreview(int count)
+        {
+            previewActions.Clear();
+            if (data.actions.Count == 0) return;
+
+            for (int i = 0; i < count; i++)
+            {
+                previewActions.Add(RollAction());
+            }
+        }
+
+        private EnemyAction RollAction()
+        {
             int totalWeight = data.actions.Sum(a => a.weight);
             int roll = UnityEngine.Random.Range(0, totalWeight);
             int cumulative = 0;
@@ -1313,12 +1663,11 @@ namespace VocabCardGame.Combat
                 cumulative += action.weight;
                 if (roll < cumulative)
                 {
-                    currentAction = action;
-                    return;
+                    return action;
                 }
             }
 
-            currentAction = data.actions[0];
+            return data.actions[0];
         }
     }
 }

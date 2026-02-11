@@ -19,6 +19,7 @@ namespace VocabCardGame.Core
         private List<ComboData> comboDatabase;
         private List<RelicData> relicDatabase;
         private SynergyConfig synergyConfig;
+        private RelicEffectConfig relicEffectConfig;
 
         private string SavePath => Path.Combine(Application.persistentDataPath, "save");
 
@@ -43,6 +44,7 @@ namespace VocabCardGame.Core
             LoadComboDatabase();
             LoadRelicDatabase();
             LoadSynergyConfig();
+            LoadRelicEffectConfig();
         }
 
         #region Word Database
@@ -65,6 +67,34 @@ namespace VocabCardGame.Core
         public WordDatabase GetWordDatabase()
         {
             return wordDatabase;
+        }
+
+        #endregion
+
+        #region Relic Effect Config
+
+        private void LoadRelicEffectConfig()
+        {
+            var json = Resources.Load<TextAsset>("Data/relic_effects");
+            if (json != null)
+            {
+                relicEffectConfig = JsonUtility.FromJson<RelicEffectConfig>(json.text);
+            }
+            else
+            {
+                relicEffectConfig = new RelicEffectConfig();
+                Debug.LogWarning("Relic effect config not found, using defaults");
+            }
+        }
+
+        public RelicEffectEntry GetRelicEffect(string relicId)
+        {
+            if (relicEffectConfig == null || relicEffectConfig.effects == null) return null;
+            foreach (var effect in relicEffectConfig.effects)
+            {
+                if (effect.id == relicId) return effect;
+            }
+            return null;
         }
 
         #endregion

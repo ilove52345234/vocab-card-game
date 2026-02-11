@@ -1,0 +1,22 @@
+{
+  "effects": [
+    { "id": "relic_re", "type": "ReturnFirstCard" },
+    { "id": "relic_un", "type": "RestSiteOption", "floatValue": 0.15, "intValue": 1 },
+    { "id": "relic_dis", "type": "SurviveOnce", "intValue": 1 },
+    { "id": "relic_pre", "type": "PreviewEnemyActions", "intValue": 2 },
+    { "id": "relic_over", "type": "OverblockReflect", "floatValue": 0.5 },
+    { "id": "relic_mis", "type": "MistakeConvert", "floatValue": 0.3 },
+    { "id": "relic_tion", "type": "QuizTimeBonus", "intValue": 3 },
+    { "id": "relic_ness", "type": "StartBlock", "intValue": 3 },
+    { "id": "relic_er", "type": "FirstAttackBonus", "intValue": 4 },
+    { "id": "relic_ful", "type": "DimensionBlockBonus", "dimension": "Guard", "intValue": 2 },
+    { "id": "relic_less", "type": "DimensionDamageBonus", "dimension": "Strike", "intValue": 2 },
+    { "id": "relic_ly", "type": "HealOnCorrect", "intValue": 2 },
+    { "id": "relic_port", "type": "FirstDimensionCostReduction", "dimension": "Warp", "intValue": 1, "lexiconBonus": 0.1 },
+    { "id": "relic_ject", "type": "DamageOnDiscard", "intValue": 1, "lexiconBonus": 0.1 },
+    { "id": "relic_struct", "type": "BlockPerTurn", "intValue": 1, "lexiconBonus": 0.1 },
+    { "id": "relic_spec", "type": "QuizHintFirstLetter", "lexiconBonus": 0.1 },
+    { "id": "relic_tract", "type": "DimensionDrawOncePerTurn", "dimension": "Boost", "intValue": 1, "lexiconBonus": 0.1 },
+    { "id": "relic_rupt", "type": "RemoveEnemyBlockOnCorrect", "floatValue": 0.2, "intValue": 1, "lexiconBonus": 0.1 }
+  ]
+}
