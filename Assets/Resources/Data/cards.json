@@ -5,378 +5,738 @@
       "cardType": 0,
       "energyCost": 1,
       "effects": [
-        { "type": 0, "value": 7, "duration": 0, "description": "造成 7 點傷害" },
-        { "type": 3, "value": 1, "duration": 0, "description": "抽 1 張牌" }
+        {
+          "type": 0,
+          "value": 7,
+          "duration": 0,
+          "description": "造成 7 點傷害"
+        },
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        }
       ],
-      "produces": ["animal"],
+      "produces": [
+        "animal"
+      ],
       "consumes": [],
       "deviation": "positive",
-      "balanceNote": "7傷+1抽(=6)=13 ≈ 1費標準12，正面偏移(-5傷換+1抽)"
+      "balanceNote": "7傷+1抽(=6)=13 ≈ 1費標準12，正面偏移(-5傷換+1抽)",
+      "dimension": "Strike"
     },
     {
       "wordId": "wolf",
       "cardType": 0,
       "energyCost": 1,
       "effects": [
-        { "type": 0, "value": 8, "duration": 0, "description": "造成 8 點傷害" },
-        { "type": 0, "value": 4, "duration": 0, "targetKeyword": "animal", "description": "手中每張動物卡 +4 傷害" }
+        {
+          "type": 0,
+          "value": 8,
+          "duration": 0,
+          "description": "造成 8 點傷害"
+        },
+        {
+          "type": 0,
+          "value": 4,
+          "duration": 0,
+          "targetKeyword": "animal",
+          "description": "手中每張動物卡 +4 傷害"
+        }
       ],
-      "produces": ["animal"],
-      "consumes": ["animal"],
+      "produces": [
+        "animal"
+      ],
+      "consumes": [
+        "animal"
+      ],
       "deviation": "condition",
-      "balanceNote": "基礎8傷 < 標準12，條件滿足時(2張動物)=16傷，條件偏移"
+      "balanceNote": "基礎8傷 < 標準12，條件滿足時(2張動物)=16傷，條件偏移",
+      "dimension": "Strike"
     },
     {
       "wordId": "apple",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 2, "value": 6, "duration": 0, "description": "回復 6 點生命" }
+        {
+          "type": 2,
+          "value": 6,
+          "duration": 0,
+          "description": "回復 6 點生命"
+        }
       ],
-      "produces": ["food"],
+      "produces": [
+        "food"
+      ],
       "consumes": [],
       "deviation": "standard",
-      "balanceNote": "回6血 = 1費標準值"
+      "balanceNote": "回6血 = 1費標準值",
+      "dimension": "Guard"
     },
     {
       "wordId": "bread",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 2, "value": 9, "duration": 0, "description": "回復 9 點生命" },
-        { "type": 18, "value": 0, "duration": 0, "description": "消耗（本場不再出現）" }
+        {
+          "type": 2,
+          "value": 9,
+          "duration": 0,
+          "description": "回復 9 點生命"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
       ],
-      "produces": ["food"],
+      "produces": [
+        "food"
+      ],
       "consumes": [],
       "deviation": "negative",
-      "balanceNote": "回9血 > 標準6，但消耗後本場移除，負面偏移"
+      "balanceNote": "回9血 > 標準6，但消耗後本場移除，負面偏移",
+      "dimension": "Guard"
     },
     {
       "wordId": "tree",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 7, "duration": 0, "description": "獲得 7 點格擋" },
-        { "type": 2, "value": 2, "duration": 0, "description": "回復 2 點生命" }
+        {
+          "type": 1,
+          "value": 7,
+          "duration": 0,
+          "description": "獲得 7 點格擋"
+        },
+        {
+          "type": 2,
+          "value": 2,
+          "duration": 0,
+          "description": "回復 2 點生命"
+        }
       ],
-      "produces": ["plant", "blockValue"],
+      "produces": [
+        "plant",
+        "blockValue"
+      ],
       "consumes": [],
       "deviation": "positive",
-      "balanceNote": "7擋(=8.2傷)+2血(=4傷)=12.2 ≈ 標準12，雙效正面偏移"
+      "balanceNote": "7擋(=8.2傷)+2血(=4傷)=12.2 ≈ 標準12，雙效正面偏移",
+      "dimension": "Guard"
     },
     {
       "wordId": "flower",
       "cardType": 1,
       "energyCost": 0,
       "effects": [
-        { "type": 2, "value": 3, "duration": 0, "description": "回復 3 點生命" }
+        {
+          "type": 2,
+          "value": 3,
+          "duration": 0,
+          "description": "回復 3 點生命"
+        }
       ],
-      "produces": ["plant"],
+      "produces": [
+        "plant"
+      ],
       "consumes": [],
       "deviation": "standard",
-      "balanceNote": "回3血 = 0費標準值"
+      "balanceNote": "回3血 = 0費標準值",
+      "dimension": "Guard"
     },
     {
       "wordId": "attack",
       "cardType": 0,
       "energyCost": 1,
       "effects": [
-        { "type": 0, "value": 12, "duration": 0, "description": "造成 12 點傷害" }
+        {
+          "type": 0,
+          "value": 12,
+          "duration": 0,
+          "description": "造成 12 點傷害"
+        }
       ],
       "produces": [],
-      "consumes": ["strength"],
+      "consumes": [
+        "strength"
+      ],
       "deviation": "standard",
-      "balanceNote": "12傷 = 1費標準值，基線攻擊卡"
+      "balanceNote": "12傷 = 1費標準值，基線攻擊卡",
+      "dimension": "Strike"
     },
     {
       "wordId": "strike",
       "cardType": 0,
       "energyCost": 1,
       "effects": [
-        { "type": 0, "value": 8, "duration": 0, "description": "造成 8 點傷害" },
-        { "type": 9, "value": 2, "duration": 2, "description": "施加 2 層流血，持續 2 回合" }
+        {
+          "type": 0,
+          "value": 8,
+          "duration": 0,
+          "description": "造成 8 點傷害"
+        },
+        {
+          "type": 9,
+          "value": 2,
+          "duration": 2,
+          "description": "施加 2 層流血，持續 2 回合"
+        }
       ],
-      "produces": ["bleeding"],
-      "consumes": ["strength"],
+      "produces": [
+        "bleeding"
+      ],
+      "consumes": [
+        "strength"
+      ],
       "deviation": "positive",
-      "balanceNote": "8傷+2流血(≈3) = 11 ≈ 標準12，正面偏移(-4傷換+流血)"
+      "balanceNote": "8傷+2流血(≈3) = 11 ≈ 標準12，正面偏移(-4傷換+流血)",
+      "dimension": "Strike"
     },
     {
       "wordId": "fire",
       "cardType": 0,
       "energyCost": 1,
       "effects": [
-        { "type": 0, "value": 8, "duration": 0, "description": "造成 8 點傷害" },
-        { "type": 5, "value": 2, "duration": 2, "description": "施加 2 層燃燒，持續 2 回合" }
+        {
+          "type": 0,
+          "value": 8,
+          "duration": 0,
+          "description": "造成 8 點傷害"
+        },
+        {
+          "type": 5,
+          "value": 2,
+          "duration": 2,
+          "description": "施加 2 層燃燒，持續 2 回合"
+        }
       ],
-      "produces": ["burning"],
-      "consumes": ["strength"],
+      "produces": [
+        "burning"
+      ],
+      "consumes": [
+        "strength"
+      ],
       "deviation": "positive",
-      "balanceNote": "8傷+2燃燒(≈3) = 11 ≈ 標準12，正面偏移(-4傷換+燃燒)"
+      "balanceNote": "8傷+2燃燒(≈3) = 11 ≈ 標準12，正面偏移(-4傷換+燃燒)",
+      "dimension": "Strike"
     },
     {
       "wordId": "run",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 6, "duration": 0, "description": "獲得 6 點格擋" },
-        { "type": 3, "value": 1, "duration": 0, "description": "抽 1 張牌" }
+        {
+          "type": 1,
+          "value": 6,
+          "duration": 0,
+          "description": "獲得 6 點格擋"
+        },
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        }
       ],
-      "produces": ["blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "positive",
-      "balanceNote": "6擋(=7傷)+1抽(=6傷)=13 ≈ 標準10(擋)，正面偏移(-4擋換+1抽)"
+      "balanceNote": "6擋(=7傷)+1抽(=6傷)=13 ≈ 標準10(擋)，正面偏移(-4擋換+1抽)",
+      "dimension": "Strike"
     },
     {
       "wordId": "jump",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 10, "duration": 0, "description": "獲得 10 點格擋" }
+        {
+          "type": 1,
+          "value": 10,
+          "duration": 0,
+          "description": "獲得 10 點格擋"
+        }
       ],
-      "produces": ["blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "standard",
-      "balanceNote": "10擋 = 1費標準值，基線防禦卡"
+      "balanceNote": "10擋 = 1費標準值，基線防禦卡",
+      "dimension": "Strike"
     },
     {
       "wordId": "charge",
       "cardType": 0,
       "energyCost": 1,
       "effects": [
-        { "type": 0, "value": 5, "duration": 0, "description": "造成 5 點傷害" },
-        { "type": 4, "value": 1, "duration": 0, "description": "獲得 1 點能量" }
+        {
+          "type": 0,
+          "value": 5,
+          "duration": 0,
+          "description": "造成 5 點傷害"
+        },
+        {
+          "type": 4,
+          "value": 1,
+          "duration": 0,
+          "description": "獲得 1 點能量"
+        }
       ],
-      "produces": ["energy"],
+      "produces": [
+        "energy"
+      ],
       "consumes": [],
       "deviation": "condition",
-      "balanceNote": "5傷+1能量(=12)=17 > 標準12，條件偏移：只能作為回合第一張牌打出"
+      "balanceNote": "5傷+1能量(=12)=17 > 標準12，條件偏移：只能作為回合第一張牌打出",
+      "dimension": "Strike"
     },
     {
       "wordId": "water",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 7, "duration": 0, "description": "獲得 7 點格擋" },
-        { "type": 8, "value": 1, "duration": 2, "description": "施加潮濕，持續 2 回合" }
+        {
+          "type": 1,
+          "value": 7,
+          "duration": 0,
+          "description": "獲得 7 點格擋"
+        },
+        {
+          "type": 8,
+          "value": 1,
+          "duration": 2,
+          "description": "施加潮濕，持續 2 回合"
+        }
       ],
-      "produces": ["wet", "blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "wet",
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "positive",
-      "balanceNote": "7擋+潮濕(≈3) ≈ 標準10，正面偏移(-3擋換+潮濕)"
+      "balanceNote": "7擋+潮濕(≈3) ≈ 標準10，正面偏移(-3擋換+潮濕)",
+      "dimension": "Guard"
     },
     {
       "wordId": "happy",
       "cardType": 2,
       "energyCost": 1,
       "effects": [
-        { "type": 10, "value": 2, "duration": 999, "description": "獲得 2 點力量（永久）" }
+        {
+          "type": 10,
+          "value": 2,
+          "duration": 999,
+          "description": "獲得 2 點力量（永久）"
+        }
       ],
-      "produces": ["strength"],
+      "produces": [
+        "strength"
+      ],
       "consumes": [],
       "deviation": "standard",
-      "balanceNote": "+2力量，每回合約+6傷，2回合回本=12=標準值，能力卡標準"
+      "balanceNote": "+2力量，每回合約+6傷，2回合回本=12=標準值，能力卡標準",
+      "dimension": "Boost"
     },
     {
       "wordId": "think",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 3, "value": 2, "duration": 0, "description": "抽 2 張牌" }
+        {
+          "type": 3,
+          "value": 2,
+          "duration": 0,
+          "description": "抽 2 張牌"
+        }
       ],
-      "produces": ["handSize"],
+      "produces": [
+        "handSize"
+      ],
       "consumes": [],
       "deviation": "standard",
-      "balanceNote": "抽2(=12) = 1費標準值"
+      "balanceNote": "抽2(=12) = 1費標準值",
+      "dimension": "Boost"
     },
     {
       "wordId": "calm",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 10, "duration": 0, "description": "獲得 10 點格擋" }
+        {
+          "type": 1,
+          "value": 10,
+          "duration": 0,
+          "description": "獲得 10 點格擋"
+        }
       ],
-      "produces": ["blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "standard",
-      "balanceNote": "10擋 = 1費標準值"
+      "balanceNote": "10擋 = 1費標準值",
+      "dimension": "Boost"
     },
     {
       "wordId": "sad",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 6, "value": 1, "duration": 1, "description": "施加冰凍 1 回合" },
-        { "type": 1, "value": 4, "duration": 0, "description": "獲得 4 點格擋" }
+        {
+          "type": 6,
+          "value": 1,
+          "duration": 1,
+          "description": "施加冰凍 1 回合"
+        },
+        {
+          "type": 1,
+          "value": 4,
+          "duration": 0,
+          "description": "獲得 4 點格擋"
+        }
       ],
-      "produces": ["frozen"],
-      "consumes": ["wet"],
+      "produces": [
+        "frozen"
+      ],
+      "consumes": [
+        "wet"
+      ],
       "deviation": "positive",
-      "balanceNote": "冰凍(≈6)+4擋(≈5)=11 ≈ 標準10(擋)，正面偏移(冰凍換-6擋)"
+      "balanceNote": "冰凍(≈6)+4擋(≈5)=11 ≈ 標準10(擋)，正面偏移(冰凍換-6擋)",
+      "dimension": "Boost"
     },
     {
       "wordId": "listen",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 3, "value": 1, "duration": 0, "description": "抽 1 張牌" },
-        { "type": 4, "value": 1, "duration": 0, "description": "獲得 1 點能量" },
-        { "type": 18, "value": 0, "duration": 0, "description": "消耗（本場不再出現）" }
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        },
+        {
+          "type": 4,
+          "value": 1,
+          "duration": 0,
+          "description": "獲得 1 點能量"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
       ],
-      "produces": ["energy", "handSize"],
+      "produces": [
+        "energy",
+        "handSize"
+      ],
       "consumes": [],
       "deviation": "negative",
-      "balanceNote": "1抽(=6)+1能量(=12)=18 > 標準12，消耗抵消，負面偏移"
+      "balanceNote": "1抽(=6)+1能量(=12)=18 > 標準12，消耗抵消，負面偏移",
+      "dimension": "Boost"
     },
     {
       "wordId": "defend",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 10, "duration": 0, "description": "獲得 10 點格擋" }
+        {
+          "type": 1,
+          "value": 10,
+          "duration": 0,
+          "description": "獲得 10 點格擋"
+        }
       ],
-      "produces": ["blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "standard",
-      "balanceNote": "10擋 = 1費標準值，基線防禦卡"
+      "balanceNote": "10擋 = 1費標準值，基線防禦卡",
+      "dimension": "Guard"
     },
     {
       "wordId": "shield",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 14, "duration": 0, "description": "獲得 14 點格擋" }
+        {
+          "type": 1,
+          "value": 14,
+          "duration": 0,
+          "description": "獲得 14 點格擋"
+        }
       ],
-      "produces": ["blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "negative",
-      "balanceNote": "14擋 > 標準10，負面偏移：下回合抽牌 -1"
+      "balanceNote": "14擋 > 標準10，負面偏移：下回合抽牌 -1",
+      "dimension": "Guard"
     },
     {
       "wordId": "sword",
       "cardType": 0,
       "energyCost": 2,
       "effects": [
-        { "type": 0, "value": 20, "duration": 0, "description": "造成 20 點傷害" }
+        {
+          "type": 0,
+          "value": 20,
+          "duration": 0,
+          "description": "造成 20 點傷害"
+        }
       ],
       "produces": [],
-      "consumes": ["strength"],
+      "consumes": [
+        "strength"
+      ],
       "deviation": "standard",
-      "balanceNote": "20傷 = 2費標準值"
+      "balanceNote": "20傷 = 2費標準值",
+      "dimension": "Strike"
     },
     {
       "wordId": "hammer",
       "cardType": 0,
       "energyCost": 2,
       "effects": [
-        { "type": 12, "value": 14, "duration": 0, "description": "對全體敵人造成 14 點傷害" }
+        {
+          "type": 12,
+          "value": 14,
+          "duration": 0,
+          "description": "對全體敵人造成 14 點傷害"
+        }
       ],
       "produces": [],
-      "consumes": ["strength"],
+      "consumes": [
+        "strength"
+      ],
       "deviation": "positive",
-      "balanceNote": "14傷(全體) < 標準20(單體)，正面偏移(-6傷換全體)"
+      "balanceNote": "14傷(全體) < 標準20(單體)，正面偏移(-6傷換全體)",
+      "dimension": "Strike"
     },
     {
       "wordId": "wall",
       "cardType": 1,
       "energyCost": 2,
       "effects": [
-        { "type": 1, "value": 17, "duration": 0, "description": "獲得 17 點格擋" }
+        {
+          "type": 1,
+          "value": 17,
+          "duration": 0,
+          "description": "獲得 17 點格擋"
+        }
       ],
-      "produces": ["blockValue"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "standard",
-      "balanceNote": "17擋 = 2費標準值"
+      "balanceNote": "17擋 = 2費標準值",
+      "dimension": "Guard"
     },
     {
       "wordId": "armor",
       "cardType": 2,
       "energyCost": 1,
       "effects": [
-        { "type": 11, "value": 2, "duration": 999, "description": "獲得 2 點敏捷（永久）" }
+        {
+          "type": 11,
+          "value": 2,
+          "duration": 999,
+          "description": "獲得 2 點敏捷（永久）"
+        }
       ],
-      "produces": ["dexterity"],
+      "produces": [
+        "dexterity"
+      ],
       "consumes": [],
       "deviation": "standard",
-      "balanceNote": "+2敏捷，每回合約+6擋，2回合回本=12=標準值，能力卡標準"
+      "balanceNote": "+2敏捷，每回合約+6擋，2回合回本=12=標準值，能力卡標準",
+      "dimension": "Guard"
     },
     {
       "wordId": "one",
       "cardType": 1,
       "energyCost": 0,
       "effects": [
-        { "type": 4, "value": 1, "duration": 0, "description": "獲得 1 點能量" },
-        { "type": 18, "value": 0, "duration": 0, "description": "消耗（本場不再出現）" }
+        {
+          "type": 4,
+          "value": 1,
+          "duration": 0,
+          "description": "獲得 1 點能量"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
       ],
-      "produces": ["energy"],
+      "produces": [
+        "energy"
+      ],
       "consumes": [],
       "deviation": "negative",
-      "balanceNote": "1能量(=12) > 0費標準7，消耗抵消，負面偏移"
+      "balanceNote": "1能量(=12) > 0費標準7，消耗抵消，負面偏移",
+      "dimension": "Warp"
     },
     {
       "wordId": "two",
       "cardType": 1,
       "energyCost": 0,
       "effects": [
-        { "type": 3, "value": 2, "duration": 0, "description": "抽 2 張牌" },
-        { "type": 18, "value": 0, "duration": 0, "description": "消耗（本場不再出現）" }
+        {
+          "type": 3,
+          "value": 2,
+          "duration": 0,
+          "description": "抽 2 張牌"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
       ],
-      "produces": ["handSize"],
+      "produces": [
+        "handSize"
+      ],
       "consumes": [],
       "deviation": "negative",
-      "balanceNote": "抽2(=12) > 0費標準7(=1抽)，消耗抵消，負面偏移"
+      "balanceNote": "抽2(=12) > 0費標準7(=1抽)，消耗抵消，負面偏移",
+      "dimension": "Warp"
     },
     {
       "wordId": "three",
       "cardType": 1,
       "energyCost": 0,
       "effects": [
-        { "type": 3, "value": 3, "duration": 0, "description": "抽 3 張牌" },
-        { "type": 2, "value": -3, "duration": 0, "description": "失去 3 點生命" }
+        {
+          "type": 3,
+          "value": 3,
+          "duration": 0,
+          "description": "抽 3 張牌"
+        },
+        {
+          "type": 2,
+          "value": -3,
+          "duration": 0,
+          "description": "失去 3 點生命"
+        }
       ],
-      "produces": ["handSize"],
+      "produces": [
+        "handSize"
+      ],
       "consumes": [],
       "deviation": "negative",
-      "balanceNote": "抽3(=18) > 0費標準7，失去3血(=-6)抵消，淨值12，負面偏移"
+      "balanceNote": "抽3(=18) > 0費標準7，失去3血(=-6)抵消，淨值12，負面偏移",
+      "dimension": "Warp"
     },
     {
       "wordId": "time",
       "cardType": 3,
       "energyCost": 1,
       "effects": [
-        { "type": 3, "value": 1, "duration": 0, "description": "抽 1 張牌" },
-        { "type": 4, "value": 1, "duration": 0, "description": "獲得 1 點能量" },
-        { "type": 18, "value": 0, "duration": 0, "description": "消耗（本場不再出現）" }
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        },
+        {
+          "type": 4,
+          "value": 1,
+          "duration": 0,
+          "description": "獲得 1 點能量"
+        },
+        {
+          "type": 18,
+          "value": 0,
+          "duration": 0,
+          "description": "消耗（本場不再出現）"
+        }
       ],
-      "produces": ["energy", "handSize"],
+      "produces": [
+        "energy",
+        "handSize"
+      ],
       "consumes": [],
       "deviation": "negative",
-      "balanceNote": "1抽(=6)+1能量(=12)=18 > 標準12，消耗抵消，負面偏移"
+      "balanceNote": "1抽(=6)+1能量(=12)=18 > 標準12，消耗抵消，負面偏移",
+      "dimension": "Warp"
     },
     {
       "wordId": "circle",
       "cardType": 1,
       "energyCost": 1,
       "effects": [
-        { "type": 1, "value": 6, "duration": 0, "description": "獲得 6 點格擋" },
-        { "type": 3, "value": 1, "duration": 0, "description": "抽 1 張牌" }
+        {
+          "type": 1,
+          "value": 6,
+          "duration": 0,
+          "description": "獲得 6 點格擋"
+        },
+        {
+          "type": 3,
+          "value": 1,
+          "duration": 0,
+          "description": "抽 1 張牌"
+        }
       ],
-      "produces": ["blockValue", "handSize"],
-      "consumes": ["dexterity"],
+      "produces": [
+        "blockValue",
+        "handSize"
+      ],
+      "consumes": [
+        "dexterity"
+      ],
       "deviation": "positive",
-      "balanceNote": "6擋(=7)+1抽(=6)=13 ≈ 標準10(擋)，正面偏移(-4擋換+1抽)"
+      "balanceNote": "6擋(=7)+1抽(=6)=13 ≈ 標準10(擋)，正面偏移(-4擋換+1抽)",
+      "dimension": "Warp"
     },
     {
       "wordId": "square",
       "cardType": 0,
       "energyCost": 2,
       "effects": [
-        { "type": 12, "value": 12, "duration": 0, "description": "對全體敵人造成 12 點傷害" }
+        {
+          "type": 12,
+          "value": 12,
+          "duration": 0,
+          "description": "對全體敵人造成 12 點傷害"
+        }
       ],
       "produces": [],
-      "consumes": ["strength"],
+      "consumes": [
+        "strength"
+      ],
       "deviation": "positive",
-      "balanceNote": "12傷(全體) < 標準20(單體)，正面偏移(-8傷換全體)"
+      "balanceNote": "12傷(全體) < 標準20(單體)，正面偏移(-8傷換全體)",
+      "dimension": "Warp"
     }
   ]
 }

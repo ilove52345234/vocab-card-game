@@ -3,6 +3,7 @@
     {
       "id": "slime_green",
       "name": "綠色史萊姆",
+      "category": "normal",
       "maxHp": 12,
       "element": 0,
       "weakness": 1,
@@ -16,6 +17,7 @@
     {
       "id": "slime_red",
       "name": "紅色史萊姆",
+      "category": "normal",
       "maxHp": 15,
       "element": 1,
       "weakness": 2,
@@ -29,6 +31,7 @@
     {
       "id": "goblin",
       "name": "哥布林",
+      "category": "normal",
       "maxHp": 20,
       "element": 1,
       "weakness": 2,
@@ -43,6 +46,7 @@
     {
       "id": "skeleton",
       "name": "骷髏兵",
+      "category": "normal",
       "maxHp": 18,
       "element": 4,
       "weakness": 0,
@@ -57,6 +61,7 @@
     {
       "id": "wolf_enemy",
       "name": "野狼",
+      "category": "normal",
       "maxHp": 25,
       "element": 0,
       "weakness": 1,
@@ -68,8 +73,59 @@
       "modifiers": []
     },
     {
+      "id": "elite_bookworm",
+      "name": "書蟲",
+      "category": "elite",
+      "testsDimension": "Strike",
+      "maxHp": 35,
+      "element": 2,
+      "weakness": 1,
+      "resistance": 2,
+      "actions": [
+        { "intent": 0, "value": 8, "weight": 3 },
+        { "intent": 1, "value": 6, "weight": 1 }
+      ],
+      "modifiers": [],
+      "specialMechanic": "每當玩家使用非攻擊卡時，書蟲+1力量；玩家答錯時額外+1力量"
+    },
+    {
+      "id": "elite_gargoyle",
+      "name": "石像鬼",
+      "category": "elite",
+      "testsDimension": "Guard",
+      "maxHp": 50,
+      "element": 3,
+      "weakness": 0,
+      "resistance": 3,
+      "actions": [
+        { "intent": 5, "value": 0, "weight": 1, "note": "沉睡：不行動，每回合+3力量，持續3回合" },
+        { "intent": 0, "value": 15, "weight": 3, "note": "醒後：重擊15傷" },
+        { "intent": 1, "value": 8, "weight": 1, "note": "醒後：格擋8" }
+      ],
+      "modifiers": [],
+      "specialMechanic": "前3回合沉睡（不行動但每回合+3力量），醒後每回合雙重攻擊；沉睡期答對可削弱（-1累積力量）"
+    },
+    {
+      "id": "elite_inkblob",
+      "name": "墨水怪",
+      "category": "elite",
+      "testsDimension": "Boost",
+      "maxHp": 40,
+      "element": 4,
+      "weakness": 1,
+      "resistance": 4,
+      "actions": [
+        { "intent": 0, "value": 6, "weight": 2 },
+        { "intent": 3, "value": 1, "weight": 2, "note": "加墨漬：往玩家棄牌堆加1張墨漬廢牌" },
+        { "intent": 1, "value": 5, "weight": 1 }
+      ],
+      "modifiers": [],
+      "specialMechanic": "每回合往玩家棄牌堆加1張「墨漬」廢牌（0費無效果佔手牌位）；手中有墨漬時答對可消除"
+    },
+    {
       "id": "boss_dragon",
       "name": "幼龍",
+      "category": "boss",
       "maxHp": 80,
       "element": 1,
       "weakness": 2,
@@ -80,7 +136,8 @@
         { "intent": 2, "value": 3, "weight": 1 },
         { "intent": 5, "value": 20, "weight": 1 }
       ],
-      "modifiers": []
+      "modifiers": [],
+      "specialMechanic": "單機制Boss：重擊+火焰吐息"
     }
   ]
 }
