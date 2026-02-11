@@ -261,6 +261,7 @@ Day 5-7: 正常模式
 - 格擋系統
 - 牌組循環
 - 遺物系統（字首字尾遺物，見 `docs/plans/2026-02-11-relic-system-design.md`）
+- 卡牌升級系統（升級=熟練度提升，見 `docs/plans/2026-02-11-card-upgrade-system.md`）
 - 地圖路線選擇
 - 精英怪維度測試
 
