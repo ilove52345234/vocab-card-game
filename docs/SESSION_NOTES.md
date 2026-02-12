@@ -252,3 +252,14 @@ Assets/Scripts/
 - 新增詞族進化流程：`Assets/Scripts/Evolution/EvolutionManager.cs`
 - 書房可觸發進化流程（由 UI 透過 EvolutionManager 執行）
 - 詞族資料：protect / run / happy 初始詞族映射已填入設定檔
+
+---
+
+## 交接記錄（2026-02-12）- 參考文件 01/02/03 閱讀完成
+
+- 已閱讀：`docs/reference/zhihu-650859964/01.pdf`
+- 關鍵結論：成功關鍵是「熟悉概念 + 高密度 Build 結構 + 可感知隨機性」，不是單一機制複製。
+- 已閱讀：`docs/reference/zhihu-650859964/02.pdf`
+- 關鍵結論：Rogue 核心在機制循環與隨機演算法配置，需保持低上手門檻與高重玩價值。
+- 已閱讀：`docs/reference/zhihu-650859964/03.pdf`
+- 關鍵結論：數值與經濟需服務節奏與質變，應採「前期可過、後期乘算放大」的成長曲線。
